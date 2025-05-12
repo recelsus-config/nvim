@@ -1,0 +1,17 @@
+*
+!init.lua
+!.gitignore
+!.luarc.json
+!README.md
+
+!lua/
+!lua/config/
+!lua/config/**
+
+!lua/
+!lua/plugins/
+!lua/plugins/**
+
+!bin/
+!bin/**
+
