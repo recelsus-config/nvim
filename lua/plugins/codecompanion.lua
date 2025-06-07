@@ -11,7 +11,7 @@ return {
       },
       display = {
         chat = {
-          auto_scroll = false,
+          auto_scroll = true,
           show_header_separator = true,
         },
       },
@@ -51,11 +51,22 @@ return {
               opts = { provider = "telescope" },
             },
           },
+          keymaps = {
+            send = {
+              modes = { n = "<F12>", i = "<F12>" }
+            },
+          },
         },
         inline = {
           adapter = 'gemini',
         },
       },
     }
-  end
+  end,
+  keys = {
+    { "<Space>cc", ":CodeCompanionChat<CR>", mode = { "n", "v" }, silent = true },
+    { "<Space>cf", ":CodeCompanion<CR>", mode = { "n", "v" }, silent = true },
+    { "<Space>ca", ":CodeCompanionAction<CR>", mode = { "n", "v" }, silent = true },
+
+  }
 }
