@@ -21,12 +21,8 @@ return {
           gemini = function()
             return require("codecompanion.adapters").extend("gemini", {
               schema = {
-                model = {
-                  default = "gemini-2.0-flash",
-                },
-                language = {
-                  default = "Japanese",
-                },
+                model = { default = "gemini-2.0-flash" },
+                language = { default = "Japanese" },
               },
             })
           end,
@@ -36,21 +32,11 @@ return {
           chat = {
             adapter = 'gemini',
             slash_commands = {
-              ["buffer"] = {
-                opts = { provider = "telescope" },
-              },
-              ["file"] = {
-                opts = { provider = "telescope" },
-              },
-              ["help"] = {
-                opts = { provider = "telescope" },
-              },
-              ["symbols"] = {
-                opts = { provider = "telescope" },
-              },
-              ["workspace"] = {
-                opts = { provider = "telescope" },
-              },
+              ["buffer"] = { opts = { provider = "telescope" }, },
+              ["file"] = { opts = { provider = "telescope" }, },
+              ["help"] = { opts = { provider = "telescope" }, },
+              ["symbols"] = { opts = { provider = "telescope" }, },
+              ["workspace"] = { opts = { provider = "telescope" }, },
             },
             keymaps = {
               send = {
