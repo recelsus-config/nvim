@@ -40,6 +40,7 @@ local function load_plugins()
     ["render-markdown.lua"] = true,
     ["markdown-preview.lua"] = true,
     ["copilot.lua"] = true,
+    ["supermaven.lua"] = true,
     ["codecompanion.lua"] = true,
     ["lsp-signature.lua"] = true,
   }
