@@ -69,7 +69,6 @@ return {
           { name = 'nvim_lsp_document_symbol' },
           { name = 'nvim_lsp_signature_help' },
           { name = 'copilot' },
-          { name = 'supermaven' },
           { name = 'buffer' },
           { name = 'path' },
         }),

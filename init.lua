@@ -1,7 +1,6 @@
 vim.g.mapleader = ' '
 
-require('config.config')
-require('config.command')
+require('config')
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
@@ -40,7 +39,6 @@ local function load_plugins()
     ["render-markdown.lua"] = true,
     ["markdown-preview.lua"] = true,
     ["copilot.lua"] = true,
-    ["supermaven.lua"] = true,
     ["codecompanion.lua"] = true,
     ["lsp-signature.lua"] = true,
   }
