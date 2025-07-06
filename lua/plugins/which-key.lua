@@ -22,7 +22,7 @@ return {
       wk.add({ "<leader>t", desc = "Translator", icon = "" })
       wk.add({ "<leader>y", desc = "Yank", icon = "" })
       wk.add({ "<leader>c", desc = "CodeCompanion", icon = "󰚰" })
-
+      wk.add({ "<leader>m", desc = "Message", icon = "" })
     end
   }
 }
