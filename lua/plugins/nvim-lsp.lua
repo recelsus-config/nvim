@@ -5,12 +5,7 @@ return {
     dependencies = {
       "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
-      "hrsh7th/nvim-cmp",
       "hrsh7th/cmp-nvim-lsp",
-      "hrsh7th/cmp-buffer",
-      "hrsh7th/cmp-path",
-      "hrsh7th/cmp-nvim-lsp-signature-help",
-      "hrsh7th/cmp-nvim-lsp-document-symbol",
     },
     config = function()
       require("mason").setup()
@@ -21,59 +16,65 @@ return {
       vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = "[LSP] Go to Previous Diagnostic", noremap = true, silent = true })
       vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = "[LSP] Go to Next Diagnostic", noremap = true, silent = true })
 
-      local on_attach = function(_, bufnr)
-        vim.diagnostic.config({
-          virtual_text = true,
-          signs = true,
-          underline = true,
-        }, bufnr)
+      -- Buffer-local LSP setup via LspAttach (Neovim 0.11+ style)
+      local aug = vim.api.nvim_create_augroup('user_lsp_attach', { clear = true })
+      vim.api.nvim_create_autocmd('LspAttach', {
+        group = aug,
+        callback = function(args)
+          local bufnr = args.buf
+          local client = vim.lsp.get_client_by_id(args.data.client_id)
 
-        vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+          -- omnifunc for completion fallback
+          vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
-        vim.keymap.set('n', 'K', vim.lsp.buf.hover, { desc = "[LSP] Show Hover Info", buffer = bufnr })
-        vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { desc = "[LSP] Go to Definition", buffer = bufnr })
-        vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, { desc = "[LSP] Go to Implementation", buffer = bufnr })
-        vim.keymap.set('n', 'gr', vim.lsp.buf.references, { desc = "[LSP] Find References", buffer = bufnr })
-        vim.keymap.set('n', 'gs', vim.lsp.buf.signature_help, { desc = "[LSP] Show Signature Help", buffer = bufnr })
-      end
+          local function buf_map(mode, lhs, rhs, desc)
+            vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc })
+          end
+
+          buf_map('n', 'K',  vim.lsp.buf.hover,        '[LSP] Show Hover Info')
+          buf_map('n', 'gd', vim.lsp.buf.definition,   '[LSP] Go to Definition')
+          buf_map('n', 'gi', vim.lsp.buf.implementation,'[LSP] Go to Implementation')
+          buf_map('n', 'gr', vim.lsp.buf.references,   '[LSP] Find References')
+          buf_map('n', 'gs', vim.lsp.buf.signature_help,'[LSP] Show Signature Help')
+
+          -- Enable inlay hints by default if supported; add toggle
+          if client and client.server_capabilities and client.server_capabilities.inlayHintProvider then
+            local ok = pcall(function() vim.lsp.inlay_hint.enable(bufnr, true) end)
+            if not ok then pcall(function() vim.lsp.inlay_hint(bufnr, true) end) end
+
+            buf_map('n', '<leader>ih', function()
+              local ih = vim.lsp.inlay_hint
+              if ih.is_enabled then
+                local enabled = ih.is_enabled(bufnr)
+                ih.enable(bufnr, not enabled)
+              else
+                local enabled = vim.b.inlay_hints_enabled or true
+                ih(bufnr, not enabled)
+                vim.b.inlay_hints_enabled = not enabled
+              end
+            end, '[LSP] Toggle Inlay Hints')
+          end
+        end,
+      })
+
+      -- Centralize capabilities for all servers
+      local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
       -- LSP setup for all installed servers
       local lspconfig = require("lspconfig")
       local servers = require("mason-lspconfig").get_installed_servers()
 
       for _, server_name in ipairs(servers) do
-        lspconfig[server_name].setup({
-          capabilities = require('cmp_nvim_lsp').default_capabilities(),
-          on_attach = on_attach,
-        })
+        local opts = { capabilities = capabilities }
+        local ok, mod = pcall(require, 'lsp')
+        if ok and type(mod.get) == 'function' then
+          local custom = mod.get(server_name)
+          if custom and type(custom) == 'table' then
+            opts = vim.tbl_deep_extend('force', opts, custom)
+          end
+        end
+        lspconfig[server_name].setup(opts)
       end
-
-      -- Completion setup
-      local cmp = require("cmp")
-
-      cmp.setup({
-        mapping = {
-          ["<C-p>"] = cmp.mapping.select_prev_item(),
-          ["<C-n>"] = cmp.mapping.select_next_item(),
-          ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-          ['<C-f>'] = cmp.mapping.scroll_docs(4),
-          ['<C-s>'] = cmp.mapping.complete(),
-          ['<C-e>'] = cmp.mapping.close(),
-          ['<CR>'] = cmp.mapping.confirm({
-            behavior = cmp.ConfirmBehavior.Replace,
-            select = true,
-          }),
-        },
-        sources = cmp.config.sources({
-          { name = 'nvim_lsp' },
-          { name = 'nvim_lsp_document_symbol' },
-          { name = 'nvim_lsp_signature_help' },
-          { name = 'copilot' },
-          { name = 'buffer' },
-          { name = 'path' },
-        }),
-      })
     end,
   },
 }
-

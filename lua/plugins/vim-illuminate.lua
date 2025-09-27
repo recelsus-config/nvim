@@ -2,7 +2,7 @@ return {
   {
     "RRethy/vim-illuminate",
     event = "BufReadPre",
-    
+
     config = function()
       require('illuminate').configure({
         delay = 100,
