@@ -18,14 +18,16 @@ return {
         },
 
         adapters = {
-          gemini = function()
-            return require("codecompanion.adapters").extend("gemini", {
-              schema = {
-                model = { default = "gemini-2.0-flash" },
-                language = { default = "Japanese" },
-              },
-            })
-          end,
+          http = {
+            gemini = function()
+              return require("codecompanion.adapters").extend("gemini", {
+                schema = {
+                  model = { default = "gemini-2.0-flash" },
+                  language = { default = "Japanese" },
+                },
+              })
+            end,
+          },
         },
 
         strategies = {
