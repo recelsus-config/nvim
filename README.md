@@ -60,19 +60,19 @@ Language servers are installed via Mason. Common servers used here:
 
 - Plugin manager: `lazy.nvim` (`init.lua`)
 - Global editor settings & diagnostics: `lua/config/config.lua`
-- LSP core (mason + lspconfig + LspAttach mappings): `lua/plugins/nvim-lsp.lua`
+- LSP core (Mason + native LSP + LspAttach mappings): `lua/plugins/nvim-lsp.lua`
 - Completion (cmp) setup: `lua/plugins/cmp.lua`
 - Copilot integration: `lua/plugins/copilot.lua`
 - Per-language LSP overrides: `lua/lsp/servers/*.lua`
 
 ### LSP Behavior (Neovim 0.11 style)
-- LSP servers are installed with Mason and started by `nvim-lspconfig`.
+- LSP servers are installed with Mason and started via Neovim's native API (`vim.lsp.config` + `vim.lsp.start`).
 - Buffer-local keymaps and `omnifunc` are set on `LspAttach`.
 - Inlay hints are enabled by default when supported and can be toggled via `<leader>ih`.
 - Global diagnostics UI is configured once in `lua/config/config.lua`.
 
 ### Per-language LSP Overrides
-Place a file under `lua/lsp/servers/<server>.lua` that returns a table merged into `lspconfig[server].setup(opts)`.
+Place a file under `lua/lsp/servers/<server>.lua` that returns a table merged over the built-in defaults before `vim.lsp.start`.
 
 Provided examples:
 - TypeScript (ts_ls): `lua/lsp/servers/ts_ls.lua`

@@ -1,11 +1,9 @@
 return {
   {
-    -- Use Neovim 0.11+ native LSP config/start API
-    -- (nvim-lspconfig "framework" calls removed)
-    "neovim/nvim-lspconfig",
+    -- Neovim 0.11+ native LSP config/start (no nvim-lspconfig)
+    "williamboman/mason.nvim",
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
-      "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
       "hrsh7th/cmp-nvim-lsp",
     },

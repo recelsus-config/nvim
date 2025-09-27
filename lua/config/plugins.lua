@@ -20,10 +20,7 @@ local function should_include(fname, env)
     ["nvim-lsp.lua"] = true,
     ["which-key.lua"] = true,
     ["telescope.lua"] = true,
-    ["render-markdown.lua"] = true,
-    ["markdown-preview.lua"] = true,
     ["copilot.lua"] = true,
-    ["codecompanion.lua"] = true,
     ["lsp-signature.lua"] = true,
     ["cmp.lua"] = true,
   }
@@ -51,4 +48,3 @@ function M.load()
 end
 
 return M
-

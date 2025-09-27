@@ -52,19 +52,19 @@ LSP サーバーは Mason でインストールします。よく使うサーバ
 
 - プラグインマネージャ: `lazy.nvim`（`init.lua`）
 - エディタ全体設定 & 診断表示: `lua/config/config.lua`
-- LSP コア（mason + lspconfig + LspAttach マッピング）: `lua/plugins/nvim-lsp.lua`
+- LSP コア（Mason + ネイティブ LSP + LspAttach マッピング）: `lua/plugins/nvim-lsp.lua`
 - 補完（cmp）セットアップ: `lua/plugins/cmp.lua`
 - Copilot 連携: `lua/plugins/copilot.lua`
 - 言語サーバー個別設定: `lua/lsp/servers/*.lua`
 
 ## LSP の挙動（Neovim 0.11 流儀）
-- サーバーは Mason でインストールし、起動は `nvim-lspconfig` により実施
+- サーバーは Mason でインストールし、起動は Neovim ネイティブ API（`vim.lsp.config` + `vim.lsp.start`）で実施
 - バッファローカルのキーマップと `omnifunc` は `LspAttach` で付与
 - Inlay Hints は対応サーバーではデフォルト有効、`<leader>ih` で切替
 - 診断 UI は `lua/config/config.lua` で一括設定
 
 ## 言語別 LSP オーバーライド
-`lua/lsp/servers/<server>.lua` にテーブルを置くと、`lspconfig[server].setup(opts)` にマージされます。
+`lua/lsp/servers/<server>.lua` にテーブルを置くと、内蔵のデフォルト設定に深くマージされ、`vim.lsp.start` の直前に適用されます。
 
 用意済み:
 - TypeScript (ts_ls): `lua/lsp/servers/ts_ls.lua`
