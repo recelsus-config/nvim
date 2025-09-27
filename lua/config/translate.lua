@@ -1,5 +1,29 @@
 local ai = require("config.ai")
 
+local function show_in_split(title, body)
+  vim.cmd("botright 12split")
+  local buf = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_win_set_buf(0, buf)
+
+  local lines = {}
+  if title and title ~= '' then
+    table.insert(lines, title)
+    table.insert(lines, string.rep('-', math.max(10, #title)))
+    table.insert(lines, '')
+  end
+
+  for _, l in ipairs(vim.split(tostring(body or ''), "\n", { plain = true })) do
+    table.insert(lines, l)
+  end
+
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+  vim.bo[buf].buftype = "nofile"
+  vim.bo[buf].bufhidden = "wipe"
+  vim.bo[buf].swapfile = false
+  vim.bo[buf].modifiable = false
+  vim.bo[buf].filetype = "markdown"
+end
+
 local function translate_visual_selection()
   local bufnr = 0
   local start_pos = vim.api.nvim_buf_get_mark(bufnr, "<")
@@ -32,10 +56,11 @@ local function translate_visual_selection()
     Text:
     %s
   ]], text_to_translate)
-  local translated = ai.send_ai_request(prompt)
-
+  local translated, err = ai.send_ai_request(prompt)
   if translated then
-    print("[Translated]: " .. translated)
+    show_in_split("Translated Selection", translated)
+  else
+    show_in_split("AI Error", err or "Failed to get response from AI API")
   end
 end
 
@@ -67,12 +92,13 @@ local function translate_diagnostic_message()
     %s
   ]], line, message)
 
-  local translated = ai.send_ai_request(prompt)
+  local translated, err = ai.send_ai_request(prompt)
   if translated then
-    print("[Translated Diagnostic + Suggestion]:\n" .. translated)
+    show_in_split("Translated Diagnostic", translated)
+  else
+    show_in_split("AI Error", err or "Failed to get response from AI API")
   end
 end
 
-vim.keymap.set('n', '<leader>td', translate_diagnostic_message, { noremap = true, silent = true, desc = "[LSP] Translate Diagnostic Message" })
-vim.keymap.set('v', '<leader>td', translate_visual_selection, { noremap = true, silent = true, desc = "[LSP] Translate Visual Selection" })
-
+vim.keymap.set('n', '<leader>td', translate_diagnostic_message, { noremap = true, silent = true, desc = "translate: diag" })
+vim.keymap.set('v', '<leader>td', translate_visual_selection,   { noremap = true, silent = true, desc = "translate: selection" })

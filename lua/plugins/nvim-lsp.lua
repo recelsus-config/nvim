@@ -12,9 +12,9 @@ return {
       require("mason-lspconfig").setup()
 
       -- Global diagnostic keymaps
-      vim.keymap.set('n', '<Leader>e', vim.diagnostic.open_float, { desc = "[LSP] Show Diagnostics", noremap = true, silent = true })
-      vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = "[LSP] Go to Previous Diagnostic", noremap = true, silent = true })
-      vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = "[LSP] Go to Next Diagnostic", noremap = true, silent = true })
+      vim.keymap.set('n', '<Leader>e', vim.diagnostic.open_float, { desc = "lsp: diag float", noremap = true, silent = true })
+      vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = "lsp: prev diag", noremap = true, silent = true })
+      vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = "lsp: next diag", noremap = true, silent = true })
 
       -- Buffer-local LSP setup via LspAttach (Neovim 0.11+ style)
       local aug = vim.api.nvim_create_augroup('user_lsp_attach', { clear = true })
@@ -31,11 +31,16 @@ return {
             vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc })
           end
 
-          buf_map('n', 'K',  vim.lsp.buf.hover,        '[LSP] Show Hover Info')
-          buf_map('n', 'gd', vim.lsp.buf.definition,   '[LSP] Go to Definition')
-          buf_map('n', 'gi', vim.lsp.buf.implementation,'[LSP] Go to Implementation')
-          buf_map('n', 'gr', vim.lsp.buf.references,   '[LSP] Find References')
-          buf_map('n', 'gs', vim.lsp.buf.signature_help,'[LSP] Show Signature Help')
+          buf_map('n', 'K',  vim.lsp.buf.hover,         'lsp: hover')
+          buf_map('n', 'gd', vim.lsp.buf.definition,    'lsp: goto def')
+          buf_map('n', 'gi', vim.lsp.buf.implementation, 'lsp: goto impl')
+          buf_map('n', 'gr', vim.lsp.buf.references,    'lsp: refs')
+          buf_map('n', 'gs', vim.lsp.buf.signature_help,'lsp: signature')
+
+          -- LSP utilities
+          buf_map('n', '<leader>lr', vim.lsp.buf.rename,       'lsp: rename')
+          buf_map('n', '<leader>la', vim.lsp.buf.code_action,  'lsp: action')
+          buf_map('n', '<leader>lf', function() vim.lsp.buf.format({ async = true }) end, 'lsp: format')
 
           -- Enable inlay hints by default if supported; add toggle
           if client and client.server_capabilities and client.server_capabilities.inlayHintProvider then
@@ -52,7 +57,7 @@ return {
                 ih(bufnr, not enabled)
                 vim.b.inlay_hints_enabled = not enabled
               end
-            end, '[LSP] Toggle Inlay Hints')
+            end, 'lsp: inlay toggle')
           end
         end,
       })

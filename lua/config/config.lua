@@ -57,7 +57,7 @@ opt.syntax = enable
 
 opt.timeoutlen = 600
 
-vim.api.nvim_set_keymap('t', '<ESC>', '<C-\\><C-n>', { noremap = true, silent = true })
+vim.keymap.set('t', '<ESC>', '<C-\\><C-n>', { noremap = true, silent = true, desc = 'term: normal mode' })
 vim.opt.termguicolors = true
 
 vim.diagnostic.config({
@@ -67,4 +67,3 @@ vim.diagnostic.config({
   update_in_insert = false,
   severity_sort = true,
 })
-

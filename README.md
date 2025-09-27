@@ -2,6 +2,12 @@
 
 `fzf` `ripgrep` `nodejs` `npm` `cmake` `make`
 
+Language servers are installed via Mason. Common servers used here:
+- TypeScript: `typescript-language-server` (ts_ls)
+- C/C++: `clangd`
+- Bash: `bash-language-server`
+- Lua: `lua-language-server`
+
 # Keymap List
 
 ### Tab Related Operations
@@ -21,6 +27,10 @@
 - `gi`: Jump to the implementation of the symbol under the cursor (`goto implementation`)
 - `gr`: Find references of the symbol under the cursor (`goto references`)
 - `gs`: Show signature help for the symbol under the cursor (`signature help`)
+- `<leader>ih`: Toggle inlay hints (if supported by the server)
+- `<leader>lr`: Rename symbol
+- `<leader>la`: Code action
+- `<leader>lf`: Format buffer
 
 ### cmp Completion Related Operations
 - `<C-d>`: Scroll documentation up (4 lines)
@@ -28,8 +38,8 @@
 - `<C-s>`: Start completion
 - `<C-e>`: Close completion window
 - `<CR>`: Select and confirm completion candidate
-- `<C-j>`: Go to the next completion candidate
-- `<C-k>`: Go to the previous completion candidate
+- `<C-n>`: Go to the next completion candidate
+- `<C-p>`: Go to the previous completion candidate
 
 ### hlslens Related Operations
 - `n`: Move to the next search result and display `hlslens` highlights
@@ -46,3 +56,48 @@
 - `<leader>fh`: Search help tags (`Telescope help_tags`)
 - `<leader>fk`: Show keymap list (`builtin.keymaps`)
 
+## Configuration Structure
+
+- Plugin manager: `lazy.nvim` (`init.lua`)
+- Global editor settings & diagnostics: `lua/config/config.lua`
+- LSP core (mason + lspconfig + LspAttach mappings): `lua/plugins/nvim-lsp.lua`
+- Completion (cmp) setup: `lua/plugins/cmp.lua`
+- Copilot integration: `lua/plugins/copilot.lua`
+- Per-language LSP overrides: `lua/lsp/servers/*.lua`
+
+### LSP Behavior (Neovim 0.11 style)
+- LSP servers are installed with Mason and started by `nvim-lspconfig`.
+- Buffer-local keymaps and `omnifunc` are set on `LspAttach`.
+- Inlay hints are enabled by default when supported and can be toggled via `<leader>ih`.
+- Global diagnostics UI is configured once in `lua/config/config.lua`.
+
+### Per-language LSP Overrides
+Place a file under `lua/lsp/servers/<server>.lua` that returns a table merged into `lspconfig[server].setup(opts)`.
+
+Provided examples:
+- TypeScript (ts_ls): `lua/lsp/servers/ts_ls.lua`
+- C/C++ (clangd): `lua/lsp/servers/clangd.lua`
+- Bash (bashls): `lua/lsp/servers/bashls.lua`
+- Lua (lua_ls): `lua/lsp/servers/lua_ls.lua`
+
+Note: If your environment reports the server name `tsserver`, it is mapped to `ts_ls` by the loader.
+
+### Completion (cmp)
+- Lives in `lua/plugins/cmp.lua` and is independent from the LSP plugin.
+- Sources enabled: `nvim_lsp`, `nvim_lsp_document_symbol`, `nvim_lsp_signature_help`, `copilot`, `buffer`, `path`.
+- Copilot completion is wired via `copilot-cmp` (see `lua/plugins/copilot.lua`).
+
+## Extra Utilities
+
+- Yank diagnostics and code lines:
+  - `<leader>yd`: Yank current line + topmost diagnostic under cursor
+  - `<leader>yad`: Yank all lines that have diagnostics with messages
+  - Implementations: `lua/config/yank.lua`
+- Translate diagnostics or visual selection (requires external provider if configured):
+  - `<leader>td` (normal/visual)
+  - Implementation: `lua/config/translate.lua`
+
+## Notes
+
+- Local environment selector file `env` (at repo root) is ignored by VCS and read by `init.lua` if present.
+- `lazy-lock.json` is ignored (not tracked). If you want to pin plugin versions, remove it from `.gitignore` locally.

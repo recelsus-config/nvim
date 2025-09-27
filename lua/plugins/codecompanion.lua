@@ -49,9 +49,9 @@ return {
           },
         },
       }
-      vim.keymap.set({ "n", "v" }, "<Space>cc", "<cmd>CodeCompanionChat<CR>", { silent = true, noremap = true, desc = "[CodeCompanion] Chat" })
-      vim.keymap.set({ "n", "v" }, "<Space>cf", "<cmd>CodeCompanion<CR>", { silent = true, noremap = true, desc = "[CodeCompanion] Function" })
-      vim.keymap.set({ "n", "v" }, "<Space>ca", "<cmd>CodeCompanionAction<CR>", { silent = true, noremap = true, desc = "[CodeCompanion] Action" })
+      vim.keymap.set({ "n", "v" }, "<Space>cc", "<cmd>CodeCompanionChat<CR>",   { silent = true, noremap = true, desc = "ai: chat" })
+      vim.keymap.set({ "n", "v" }, "<Space>cf", "<cmd>CodeCompanion<CR>",       { silent = true, noremap = true, desc = "ai: run" })
+      vim.keymap.set({ "n", "v" }, "<Space>ca", "<cmd>CodeCompanionAction<CR>", { silent = true, noremap = true, desc = "ai: action" })
     end,
   }
 }

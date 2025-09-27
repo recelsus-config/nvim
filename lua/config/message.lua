@@ -15,5 +15,4 @@ vim.api.nvim_create_user_command("ShowMessage", function()
   show_message_in_split(output)
 end, {})
 
-vim.keymap.set('n', '<Leader>ms', ':ShowMessage<CR>', { noremap = true, silent = true, desc = "Show :messages in split" })
-
+vim.keymap.set('n', '<Leader>ms', ':ShowMessage<CR>', { noremap = true, silent = true, desc = "msg: show" })

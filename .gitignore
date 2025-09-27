@@ -119,5 +119,5 @@ dist/
 # Local environment selector file read by init.lua
 /env
 
-# Keep lazy-lock.json tracked (do NOT ignore)
-# lazy-lock.json
+# Do not track plugin lockfile
+lazy-lock.json

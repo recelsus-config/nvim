@@ -41,13 +41,12 @@ return {
       })
       local builtin = require("telescope.builtin")
 
-      vim.keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<CR>", { noremap = true, silent = true, desc = "[Telescope] Find Files" })
-      vim.keymap.set("n", "<leader>fg", "<cmd>Telescope live_grep<CR>", { noremap = true, silent = true, desc = "[Telescope] Live Grep (Text Search)" })
-      vim.keymap.set("n", "<leader>fb", "<cmd>Telescope buffers<CR>", { noremap = true, silent = true, desc = "[Telescope] List Buffers" })
-      vim.keymap.set("n", "<leader>fh", "<cmd>Telescope help_tags<CR>", { noremap = true, silent = true, desc = "[Telescope] Search Help Tags" })
-      vim.keymap.set("n", "<leader>fk", "<cmd>Telescope keymaps<CR>", { noremap = true, silent = true, desc = "[Telescope] Search Keymaps" })
+      vim.keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<CR>", { noremap = true, silent = true, desc = "find: files" })
+      vim.keymap.set("n", "<leader>fg", "<cmd>Telescope live_grep<CR>",  { noremap = true, silent = true, desc = "find: grep" })
+      vim.keymap.set("n", "<leader>fb", "<cmd>Telescope buffers<CR>",     { noremap = true, silent = true, desc = "find: buffers" })
+      vim.keymap.set("n", "<leader>fh", "<cmd>Telescope help_tags<CR>",   { noremap = true, silent = true, desc = "find: help" })
+      vim.keymap.set("n", "<leader>fk", "<cmd>Telescope keymaps<CR>",     { noremap = true, silent = true, desc = "find: keymaps" })
 
     end
   }
 }
-

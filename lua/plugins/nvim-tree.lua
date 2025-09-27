@@ -5,7 +5,7 @@ return {
     lazy = false,
 
     keys = {
-      { mode = "n", "<C-e>", "<cmd>:Ex<cr>", desc = "Toggle Nvim-Tree Window on Left" },
+      { mode = "n", "<C-e>", "<cmd>:Ex<cr>", desc = "tree: toggle" },
     },
 
     config = function()
