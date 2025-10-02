@@ -4,7 +4,7 @@ local cmd = vim.cmd
 opt.title = true
 opt.encoding = 'utf-8'
 vim.scriptencoding = 'utf-8'
-opt.fileformats = 'unix', 'mac'
+opt.fileformats = 'unix' -- , 'mac'
 opt.mouse = "a"
 
 opt.ambiwidth = "double"
@@ -53,7 +53,7 @@ opt.signcolumn = 'yes'
 opt.splitbelow = true
 opt.splitright = true
 
-opt.syntax = enable
+opt.syntax = 'enable'
 
 opt.timeoutlen = 600
 

@@ -91,7 +91,8 @@ Note: If your environment reports the server name `tsserver`, it is mapped to `t
 
 - Yank diagnostics and code lines:
   - `<leader>yd`: Yank current line + topmost diagnostic under cursor
-  - `<leader>yad`: Yank all lines that have diagnostics with messages
+  - `<leader>yad`: Yank entire buffer, then list lines with diagnostics
+  - `<leader>ys` (visual): Yank selected block, then list diagnostics in selection
   - Implementations: `lua/config/yank.lua`
 - Translate diagnostics or visual selection (requires external provider if configured):
   - `<leader>td` (normal/visual)

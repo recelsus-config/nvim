@@ -26,21 +26,36 @@ end
 
 local function translate_visual_selection()
   local bufnr = 0
-  local start_pos = vim.api.nvim_buf_get_mark(bufnr, "<")
-  local end_pos = vim.api.nvim_buf_get_mark(bufnr, ">")
+  local mode = vim.fn.mode()
+  local srow, scol = unpack(vim.api.nvim_buf_get_mark(bufnr, '<'))
+  local erow, ecol = unpack(vim.api.nvim_buf_get_mark(bufnr, '>'))
 
-  local lines = vim.api.nvim_buf_get_text(bufnr,
-    start_pos[1] - 1, start_pos[2],
-    end_pos[1] - 1, end_pos[2] + 1,
-    {}
-  )
-
-  if not lines or #lines == 0 then
-    print("No text selected.")
-    return
+  -- normalize order (1-based to 0-based later)
+  if srow > erow or (srow == erow and scol > ecol) then
+    srow, erow, scol, ecol = erow, srow, ecol, scol
   end
 
-  local text_to_translate = table.concat(lines, "\n")
+  local text_to_translate
+  if mode == 'V' then
+    -- linewise selection
+    local lines = vim.api.nvim_buf_get_lines(bufnr, srow - 1, erow, false)
+    text_to_translate = table.concat(lines, '\n')
+  else
+    -- characterwise (and others): prefer exact text range
+    local parts = vim.api.nvim_buf_get_text(bufnr, srow - 1, scol - 1, erow - 1, ecol, {})
+    if parts and #parts > 0 then
+      text_to_translate = table.concat(parts, '\n')
+    else
+      -- fallback to linewise if empty
+      local lines = vim.api.nvim_buf_get_lines(bufnr, srow - 1, erow, false)
+      text_to_translate = table.concat(lines, '\n')
+    end
+  end
+
+  if not text_to_translate or text_to_translate == '' then
+    print('No text selected.')
+    return
+  end
   local prompt = string.format([[
     Translate the following text into Japanese.
 
