@@ -22,7 +22,7 @@ local function clamp(n, minv, maxv)
 end
 
 local function build_box(lines)
-  local BAR_LEN = 10
+  local BAR_LEN = 40
   local bar = string.rep('=', BAR_LEN)
 
   local out = {}
