@@ -84,7 +84,8 @@ Note: If your environment reports the server name `tsserver`, it is mapped to `t
 
 ### Completion (cmp)
 - Lives in `lua/plugins/cmp.lua` and is independent from the LSP plugin.
-- Sources enabled: `nvim_lsp`, `nvim_lsp_document_symbol`, `nvim_lsp_signature_help`, `copilot`, `buffer`, `path`.
+- Snippet engine: `LuaSnip` is used to expand snippet-style and multi-line items.
+- Sources: `nvim_lsp`, `nvim_lsp_document_symbol`, `nvim_lsp_signature_help`, `luasnip`, `copilot`, `buffer`, `path`.
 - Copilot completion is wired via `copilot-cmp` (see `lua/plugins/copilot.lua`).
 
 ## Extra Utilities

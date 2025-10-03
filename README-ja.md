@@ -76,7 +76,8 @@ LSP サーバーは Mason でインストールします。よく使うサーバ
 
 ## 補完（cmp）
 - 設定は `lua/plugins/cmp.lua` に分離されています（LSP プラグインから独立）
-- 有効なソース: `nvim_lsp`, `nvim_lsp_document_symbol`, `nvim_lsp_signature_help`, `copilot`, `buffer`, `path`
+- スニペットエンジンとして `LuaSnip` を使用（スニペット形式・複数行の候補に対応）
+- 有効なソース: `nvim_lsp`, `nvim_lsp_document_symbol`, `nvim_lsp_signature_help`, `luasnip`, `copilot`, `buffer`, `path`
 - Copilot の補完は `copilot-cmp` 連携で有効化（`lua/plugins/copilot.lua`）
 
 ## 追加ユーティリティ

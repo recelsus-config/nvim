@@ -44,19 +44,32 @@ return {
 
           -- Enable inlay hints by default if supported; add toggle
           if client and client.server_capabilities and client.server_capabilities.inlayHintProvider then
-            local ok = pcall(function() vim.lsp.inlay_hint.enable(bufnr, true) end)
-            if not ok then pcall(function() vim.lsp.inlay_hint(bufnr, true) end) end
+            local ih = vim.lsp.inlay_hint
+            local function ih_enable(buf, enable)
+              if ih and ih.enable then
+                if pcall(ih.enable, enable, { bufnr = buf }) then return true end
+                if pcall(ih.enable, buf, enable) then return true end
+              end
+              if type(ih) == 'function' then
+                return pcall(ih, buf, enable)
+              end
+              return false
+            end
+            local function ih_is_enabled(buf)
+              if ih and ih.is_enabled then
+                local ok, val = pcall(ih.is_enabled, { bufnr = buf })
+                if ok and type(val) == 'boolean' then return val end
+                ok, val = pcall(ih.is_enabled, buf)
+                if ok and type(val) == 'boolean' then return val end
+              end
+              return false
+            end
+
+            ih_enable(bufnr, true)
 
             buf_map('n', '<leader>ih', function()
-              local ih = vim.lsp.inlay_hint
-              if ih.is_enabled then
-                local enabled = ih.is_enabled(bufnr)
-                ih.enable(bufnr, not enabled)
-              else
-                local enabled = vim.b.inlay_hints_enabled or true
-                ih(bufnr, not enabled)
-                vim.b.inlay_hints_enabled = not enabled
-              end
+              local cur = ih_is_enabled(bufnr)
+              ih_enable(bufnr, not cur)
             end, 'lsp: inlay toggle')
           end
         end,
