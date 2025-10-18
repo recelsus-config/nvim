@@ -125,6 +125,14 @@ return {
           root_dir = root_pattern({ 'compile_commands.json', 'compile_flags.txt', '.git' }),
           settings = {},
         }),
+
+        pyright = with_capabilities({
+          name = 'pyright',
+          cmd = { 'pyright-langserver', '--stdio' },
+          filetypes = { 'python' },
+          root_dir = root_pattern({ 'pyproject.toml', 'setup.cfg', 'setup.py', 'requirements.txt', '.git' }),
+          settings = {},
+        }),
       }
 
       -- Merge user overrides from lua/lsp/servers/<name>.lua ----------------
