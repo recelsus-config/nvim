@@ -16,7 +16,7 @@ function M.send_ai_request(prompt)
     }
   })
 
-  local url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" .. api_key
+  local url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" .. api_key
   local curl_cmd = {
     "curl", "-sS", "-X", "POST", url,
     "-H", "Content-Type: application/json",
