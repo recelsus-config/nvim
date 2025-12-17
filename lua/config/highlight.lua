@@ -14,9 +14,26 @@ local function clear_background()
   end
 end
 
-clear_background()
+local function apply_search_highlight()
+  local custom_groups = {
+    Search = { fg = '#0f0f0f', bg = '#ffe066', bold = true },
+    IncSearch = { fg = '#0f0f0f', bg = '#ffca3a', bold = true },
+    CurSearch = { fg = '#0f0f0f', bg = '#ffba08', bold = true },
+  }
+
+  for name, opts in pairs(custom_groups) do
+    vim.api.nvim_set_hl(0, name, opts)
+  end
+end
+
+local function refresh_highlights()
+  clear_background()
+  apply_search_highlight()
+end
+
+refresh_highlights()
 
 vim.api.nvim_create_autocmd('ColorScheme', {
   group = transparent_group,
-  callback = clear_background,
+  callback = refresh_highlights,
 })
