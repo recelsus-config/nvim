@@ -6,6 +6,11 @@ function M.send_ai_request(prompt)
     return nil, "GEMINI_API_KEY is not set."
   end
 
+  local model = vim.fn.getenv("GEMINI_MODEL")
+  if not model or model == "" then
+    return nil, "GEMINI_MODEL is not set."
+  end
+
   local body = vim.fn.json_encode({
     contents = {
       {
@@ -16,7 +21,7 @@ function M.send_ai_request(prompt)
     }
   })
 
-  local url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" .. api_key
+  local url = "https://generativelanguage.googleapis.com/v1beta/models/" .. model .. ":generateContent?key=" .. api_key
   local curl_cmd = {
     "curl", "-sS", "-X", "POST", url,
     "-H", "Content-Type: application/json",

@@ -1,10 +1,11 @@
 local config_path = vim.fn.stdpath("config") .. "/lua/config"
 
-local files = vim.fn.glob(config_path .. "/*.lua", true, true)
+local files = vim.fn.globpath(config_path, "**/*.lua", true, true)
+table.sort(files)
 
 for _, file in ipairs(files) do
-  local filename = vim.fn.fnamemodify(file, ":t:r")
-  if filename ~= "init" then
-    require("config." .. filename)
+  local rel = file:sub(#config_path + 2):gsub("%.lua$", "")
+  if rel ~= "init" and not rel:match("/init$") then
+    require("config." .. rel:gsub("/", "."))
   end
 end

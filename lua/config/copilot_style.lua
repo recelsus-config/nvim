@@ -9,7 +9,8 @@ local function comment(line)
   if not cs:find('%%s') then
     cs = (cs .. ' %s')
   end
-  return cs:gsub('%%s', line)
+  local commented = cs:gsub('%%s', line)
+  return commented
 end
 
 local function find_block_at_cursor(bufnr, row)

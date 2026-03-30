@@ -12,7 +12,7 @@ return {
       require("mason-lspconfig").setup()
 
       -- Global diagnostic keymaps
-      vim.keymap.set('n', '<Leader>e', vim.diagnostic.open_float, { desc = "lsp: diag float", noremap = true, silent = true })
+      vim.keymap.set('n', '<leader>le', vim.diagnostic.open_float, { desc = "lsp: diag float", noremap = true, silent = true })
       vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = "lsp: prev diag", noremap = true, silent = true })
       vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = "lsp: next diag", noremap = true, silent = true })
 
@@ -67,7 +67,7 @@ return {
 
             ih_enable(bufnr, true)
 
-            buf_map('n', '<leader>ih', function()
+            buf_map('n', '<leader>li', function()
               local cur = ih_is_enabled(bufnr)
               ih_enable(bufnr, not cur)
             end, 'lsp: inlay toggle')

@@ -97,7 +97,7 @@ Note: If your environment reports the server name `tsserver`, it is mapped to `t
   - Implementations: `lua/config/yank.lua`
 - Translate diagnostics or visual selection (requires external provider if configured):
   - `<leader>td` (normal/visual)
-  - Implementation: `lua/config/translate.lua`
+  - Implementation: `lua/config/ai/translate.lua`
 
 ## Notes
 

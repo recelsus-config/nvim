@@ -27,10 +27,8 @@ return {
         linehl = false
       })
 
-      vim.keymap.set('n', '<leader>gb', '<cmd>Gitsigns blame_line<CR>',               { noremap = true, silent = true, desc = "git: blame" })
-      vim.keymap.set('n', '<leader>gB', '<cmd>Gitsigns toggle_current_line_blame<CR>',{ noremap = true, silent = true, desc = "git: blame toggle" })
-      vim.keymap.set('n', '<leader>gd', '<cmd>Gitsigns toggle_deleted<CR>',           { noremap = true, silent = true, desc = "git: deleted toggle" })
-      vim.keymap.set('n', '<leader>gD', '<cmd>Gitsigns diffthis<CR>',                 { noremap = true, silent = true, desc = "git: diff" })
+      vim.keymap.set('n', '<leader>gb', '<cmd>Gitsigns toggle_current_line_blame<CR>', { noremap = true, silent = true, desc = "git: blame toggle" })
+      vim.keymap.set('n', '<leader>gd', '<cmd>Gitsigns diffthis<CR>',                  { noremap = true, silent = true, desc = "git: diff" })
     end
   }
 }

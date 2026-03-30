@@ -89,7 +89,7 @@ LSP サーバーは Mason でインストールします。よく使うサーバ
   - 実装: `lua/config/yank.lua`
 - 診断メッセージやビジュアル選択の翻訳（外部プロバイダ設定が必要な場合あり）:
   - `<leader>td`（ノーマル／ビジュアル）
-  - 実装: `lua/config/translate.lua`
+  - 実装: `lua/config/ai/translate.lua`
 - `:messages` の表示を分割で開く:
   - `<leader>ms`
   - 実装: `lua/config/message.lua`

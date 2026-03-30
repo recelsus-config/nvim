@@ -11,9 +11,9 @@ return {
         copilot_node_command = 'node'
       })
       -- Helper to toggle style hint (snake_case) at top of buffer
-      vim.keymap.set('n', '<leader>cs', function()
+      vim.keymap.set('n', '<leader>ch', function()
         require('config.copilot_style').toggle_snake_case_hint()
-      end, { noremap = true, silent = true, desc = 'ai: hint' })
+      end, { noremap = true, silent = true, desc = 'comment: ai hint' })
     end,
 
     dependencies = {
