@@ -98,6 +98,17 @@ Note: If your environment reports the server name `tsserver`, it is mapped to `t
 - Translate diagnostics or visual selection (requires external provider if configured):
   - `<leader>td` (normal/visual)
   - Implementation: `lua/config/ai/translate.lua`
+- Insert shell command output below the current line:
+  - `<leader>si`: prompt for a command and insert its output
+  - `:ShellInsert git status`
+  - Implementation: `lua/config/shell_insert.lua`
+
+## Built-in Alternatives
+
+- `:read !cmd`: insert command output below the current line
+- `:%!cmd`: replace the whole buffer with command output
+- `:'<,'>!cmd`: filter the selected range through a command
+- Examples: `:read !ls`, `:%!sort`, `:'<,'>!jq .`
 
 ## Notes
 

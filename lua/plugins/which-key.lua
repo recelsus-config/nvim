@@ -24,6 +24,7 @@ return {
       wk.add({ "<leader>y", desc = "Yank", icon = "" })
       wk.add({ "<leader>c", desc = "Comment", icon = "󰚰" })
       wk.add({ "<leader>m", desc = "Msg", icon = "" })
+      wk.add({ "<leader>s", desc = "Shell", icon = "" })
 
       -- Sub-entries to ensure visibility in which-key
       wk.add({ "<leader>ff", desc = "find: files", mode = "n" })
@@ -55,6 +56,7 @@ return {
       wk.add({ "<leader>td", desc = "translate: diag/selection", mode = "n" })
       wk.add({ "<leader>td", desc = "translate: diag/selection", mode = "v" })
       wk.add({ "<leader>tr", desc = "translate: replace", mode = "v" })
+      wk.add({ "<leader>si", desc = "shell: insert output", mode = "n" })
     end
   }
 }

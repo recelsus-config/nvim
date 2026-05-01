@@ -93,6 +93,17 @@ LSP サーバーは Mason でインストールします。よく使うサーバ
 - `:messages` の表示を分割で開く:
   - `<leader>ms`
   - 実装: `lua/config/message.lua`
+- シェルコマンドの出力を現在行の下へ挿入:
+  - `<leader>si`: コマンドを入力して出力を挿入
+  - `:ShellInsert git status`
+  - 実装: `lua/config/shell_insert.lua`
+
+## 標準機能での代替
+
+- `:read !cmd`: 現在行の下にコマンド出力を挿入
+- `:%!cmd`: バッファ全体をコマンド出力で置換
+- `:'<,'>!cmd`: 選択範囲をコマンドでフィルタ
+- 例: `:read !ls`, `:%!sort`, `:'<,'>!jq .`
 
 ## 備考
 
