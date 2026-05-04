@@ -13,8 +13,12 @@ return {
 
       -- Global diagnostic keymaps
       vim.keymap.set('n', '<leader>le', vim.diagnostic.open_float, { desc = "lsp: diag float", noremap = true, silent = true })
-      vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = "lsp: prev diag", noremap = true, silent = true })
-      vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = "lsp: next diag", noremap = true, silent = true })
+      vim.keymap.set('n', '[d', function()
+        vim.diagnostic.jump({ count = -1, float = true })
+      end, { desc = "lsp: prev diag", noremap = true, silent = true })
+      vim.keymap.set('n', ']d', function()
+        vim.diagnostic.jump({ count = 1, float = true })
+      end, { desc = "lsp: next diag", noremap = true, silent = true })
 
       -- Buffer-local LSP setup via LspAttach (Neovim 0.11+ style)
       local aug = vim.api.nvim_create_augroup('user_lsp_attach', { clear = true })
@@ -138,7 +142,7 @@ return {
       -- Merge user overrides from lua/lsp/servers/<name>.lua ----------------
       local function load_user_opts(name)
         local ok, mod = pcall(require, 'lsp')
-        if ok and type(mod.get) == 'function' then
+        if ok and type(mod) == 'table' and type(mod.get) == 'function' then
           local custom = mod.get(name)
           if custom and type(custom) == 'table' then return custom end
         end
@@ -180,10 +184,7 @@ return {
         local root = item.cfg.root_dir and item.cfg.root_dir(fname) or vim.fn.getcwd()
         local final = vim.tbl_deep_extend('force', item.cfg, { name = item.name, root_dir = root })
 
-        -- Normalize config via vim.lsp.config (Neovim 0.11+)
-        local ok_cfg, normalized = pcall(vim.lsp.config, final)
-        local to_start = ok_cfg and normalized or final
-        vim.lsp.start(to_start, { bufnr = bufnr })
+        vim.lsp.start(final, { bufnr = bufnr })
       end
 
       local grp = vim.api.nvim_create_augroup('user_lsp_autostart', { clear = true })
