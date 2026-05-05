@@ -40,6 +40,7 @@ LSP サーバーは Mason でインストールします。よく使うサーバ
 - `<C-p>`: 前の補完候補へ
 - 補完ドキュメントは rounded border のフロートで自動表示
 - Copilot は inline panel/suggestion ではなく blink.cmp の source として表示
+- cmdline 補完はコマンドラインモードで自動表示
 
 ## 翻訳
 - `<leader>td`（ノーマル）: カーソル位置の診断を翻訳
@@ -57,15 +58,30 @@ LSP サーバーは Mason でインストールします。よく使うサーバ
 - `<leader>fh`: ヘルプタグ検索（`Telescope help_tags`）
 - `<leader>fk`: キーマップ検索（`builtin.keymaps`）
 
+## Git/Diff 関連
+- `<leader>gb`: 現在行 blame の切り替え
+- `<leader>gd`: gitsigns で現在ファイルの diff を表示
+- `<leader>gD`: 現在の作業ツリー差分を Diffview で開く
+- `<leader>gM`: default branch 相当の ref（`origin/HEAD`, `main`, `master`, `HEAD~1`）との差分を Diffview で開く
+- `<leader>gC`: Diffview を閉じる
+- `<leader>gT`: Diffview のファイルパネルを切り替え
+- `<leader>gF`: 現在ファイルの履歴を表示
+- `<leader>gH`: リポジトリのファイル履歴を表示
+- `<leader>gs`: fugitive の Git status を開く
+- `<leader>gv`: 現在ファイルの diff を垂直分割で開く
+- `<leader>gx`: 現在ファイルの diff を水平分割で開く
+
 # 設定構成
 
 - プラグインマネージャ: `lazy.nvim`（`init.lua`）
 - エディタ全体設定 & 診断表示: `lua/config/config.lua`
+- 環境変数ファイル読み込み: `lua/config/env.lua`
 - LSP コア（Mason + ネイティブ LSP + LspAttach マッピング）: `lua/plugins/nvim-lsp.lua`
 - 補完（blink.cmp）セットアップ: `lua/plugins/cmp.lua`
 - Copilot 連携: `lua/plugins/copilot.lua`
 - Tree-sitter parser 管理: `lua/plugins/nvim-treesitter.lua`
 - ネイティブ Tree-sitter 起動: `lua/config/treesitter.lua`
+- Git diff/review 補助: `lua/plugins/git-diff.lua`
 - 言語サーバー個別設定: `lua/lsp/servers/*.lua`
 
 ## LSP の挙動（Neovim 0.11 流儀）
@@ -92,6 +108,7 @@ LSP サーバーは Mason でインストールします。よく使うサーバ
 - 有効なソース: `lsp`, `path`, `snippets`, `buffer`, `copilot`
 - Copilot の補完は `blink-cmp-copilot` を blink.cmp source として有効化
 - 補完メニューの選択行とドキュメントフロートは見やすいように明示的に配色・表示設定
+- cmdline mode でも blink.cmp を使い、最初に `<Tab>` を押さなくても候補メニューを自動表示
 
 ## Tree-sitter
 - Parser のインストール管理は `neovim-treesitter/nvim-treesitter` と `treesitter-parser-registry` を使用
@@ -101,8 +118,19 @@ LSP サーバーは Mason でインストールします。よく使うサーバ
 ## LSP テストファイル
 - `test/ts/*.ts` と `test/cpp/*.{hpp,cpp}` は hover、定義、型定義、分割ジャンプ、参照、補完を確認するための snake_case サンプルです
 
+## Git Diff ツール
+- `gitsigns.nvim` はインライン sign、blame、現在ファイルの hunk/diff 確認を担当
+- `diffview.nvim` はファイルパネル付きの左右 diff で作業ツリー、ブランチ差分、履歴確認を担当
+- `vim-fugitive` は Git status と現在ファイルの split diff を担当
+
 ## 追加ユーティリティ
 
+- 環境変数の上書き・追加:
+  - 設定ディレクトリ直下の `.env` は起動時に自動読み込みされ、この Neovim 設定用の環境変数を上書き・追加できます
+  - `.env.example` はローカル用変数のテンプレートです。必要に応じて `.env` にコピーして使います
+  - `:EnvLoad`: Neovim を起動したディレクトリから上方向に `.env` を探し、手動で読み込みます
+  - `:EnvLoad path/to/file.env`: 指定した env ファイルを手動で読み込みます
+  - 実装: `lua/config/env.lua`
 - 診断とコード行のヤンク:
   - `<leader>yd`: カーソル行 + 最初の診断メッセージをヤンク
   - `<leader>yad`: ファイル全体をヤンクし、その後に診断のある行＋メッセージを列挙してヤンク
@@ -133,5 +161,5 @@ LSP サーバーは Mason でインストールします。よく使うサーバ
 
 ## 備考
 
-- ルート直下の `env` ファイル（存在すれば）は `init.lua` により読み込まれ、VCS からは除外されています
+- `.env` と `.env.*` は追跡しません。`.env.example` はテンプレートとして追跡します
 - `lazy-lock.json` は追跡しません（.gitignore）。プラグインバージョンを固定したい場合は、各自で `.gitignore` から除外してください
