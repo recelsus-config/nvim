@@ -38,7 +38,7 @@ return {
 
       wk.add({ "<leader>yd", desc = "diag: yank line", mode = "n" })
       wk.add({ "<leader>yad", desc = "diag: yank all", mode = "n" })
-      wk.add({ "<leader>ys", desc = "diag: yank sel", mode = "v" })
+      wk.add({ "<leader>ys", desc = "diag: yank sel", mode = "x" })
       wk.add({ "<leader>hj", desc = "help: ja", mode = "n" })
       wk.add({ "<leader>he", desc = "help: en", mode = "n" })
 
@@ -51,10 +51,10 @@ return {
 
       wk.add({ "<leader>tc", desc = "translate: comment", mode = "n" })
       wk.add({ "<leader>td", desc = "translate: diag", mode = "n" })
-      wk.add({ "<leader>td", desc = "translate: selection", mode = "v" })
+      wk.add({ "<leader>td", desc = "translate: selection", mode = "x" })
       wk.add({ "<leader>tt", desc = "translate: cursor", mode = "n" })
-      wk.add({ "<leader>tt", desc = "translate: selection", mode = "v" })
-      wk.add({ "<leader>tr", desc = "translate: replace", mode = "v" })
+      wk.add({ "<leader>tt", desc = "translate: selection", mode = "x" })
+      wk.add({ "<leader>tr", desc = "translate: replace", mode = "x" })
       wk.add({ "<leader>tw", desc = "translate: word", mode = "n" })
       wk.add({ "<leader>si", desc = "shell: insert output", mode = "n" })
     end

@@ -27,9 +27,34 @@ end
 
 local function get_visual_selection()
   local bufnr = 0
-  local mode = vim.fn.mode()
-  local srow, scol = unpack(vim.api.nvim_buf_get_mark(bufnr, '<'))
-  local erow, ecol = unpack(vim.api.nvim_buf_get_mark(bufnr, '>'))
+  local current_mode = vim.fn.mode()
+  local is_active_visual = current_mode == 'v' or current_mode == 'V' or current_mode == '\022'
+  local mode = is_active_visual and current_mode or vim.fn.visualmode()
+  local srow, scol, erow, ecol
+
+  if is_active_visual then
+    local start_pos = vim.fn.getpos('v')
+    local end_pos = vim.fn.getpos('.')
+    srow = start_pos[2]
+    scol = start_pos[3] - 1
+    erow = end_pos[2]
+    ecol = end_pos[3] - 1
+  else
+    srow, scol = unpack(vim.api.nvim_buf_get_mark(bufnr, '<'))
+    erow, ecol = unpack(vim.api.nvim_buf_get_mark(bufnr, '>'))
+  end
+
+  if srow == 0 or erow == 0 then
+    return {
+      bufnr = bufnr,
+      mode = mode,
+      srow = srow,
+      scol = scol,
+      erow = erow,
+      ecol = ecol,
+      text = '',
+    }
+  end
 
   -- normalize order (1-based to 0-based later)
   if srow > erow or (srow == erow and scol > ecol) then
@@ -43,7 +68,11 @@ local function get_visual_selection()
     text_to_translate = table.concat(lines, '\n')
   else
     -- characterwise (and others): prefer exact text range
-    local parts = vim.api.nvim_buf_get_text(bufnr, srow - 1, scol, erow - 1, ecol + 1, {})
+    local end_line = vim.api.nvim_buf_get_lines(bufnr, erow - 1, erow, false)[1] or ''
+    local end_col = math.min(ecol + 1, #end_line)
+    local ok, parts
+    ok, parts = pcall(vim.api.nvim_buf_get_text, bufnr, srow - 1, scol, erow - 1, end_col, {})
+    if not ok then parts = nil end
     if parts and #parts > 0 then
       text_to_translate = table.concat(parts, '\n')
     else
@@ -307,6 +336,6 @@ vim.keymap.set('n', '<leader>td', translate_diagnostic_message, { noremap = true
 vim.keymap.set('n', '<leader>tc', translate_current_comment, { noremap = true, silent = true, desc = "translate: comment" })
 vim.keymap.set('n', '<leader>tt', translate_cursor_context, { noremap = true, silent = true, desc = "translate: cursor" })
 vim.keymap.set('n', '<leader>tw', translate_current_word, { noremap = true, silent = true, desc = "translate: word" })
-vim.keymap.set('v', '<leader>td', translate_visual_selection, { noremap = true, silent = true, desc = "translate: selection" })
-vim.keymap.set('v', '<leader>tt', translate_visual_selection, { noremap = true, silent = true, desc = "translate: selection" })
-vim.keymap.set('v', '<leader>tr', replace_visual_selection_with_translation, { noremap = true, silent = true, desc = "translate: replace" })
+vim.keymap.set('x', '<leader>td', translate_visual_selection, { noremap = true, silent = true, desc = "translate: selection" })
+vim.keymap.set('x', '<leader>tt', translate_visual_selection, { noremap = true, silent = true, desc = "translate: selection" })
+vim.keymap.set('x', '<leader>tr', replace_visual_selection_with_translation, { noremap = true, silent = true, desc = "translate: replace" })

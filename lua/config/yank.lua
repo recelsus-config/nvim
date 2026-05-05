@@ -75,14 +75,40 @@ end
 
 vim.keymap.set('n', '<leader>yad', yank_all_diagnostics_with_code, { noremap = true, silent = true, desc = "diag: yank all" })
 
+local function get_visual_line_range()
+  local bufnr = 0
+  local mode = vim.fn.mode()
+  local is_active_visual = mode == 'v' or mode == 'V' or mode == '\022'
+  local sline, eline
+
+  if is_active_visual then
+    local start_pos = vim.fn.getpos('v')
+    local end_pos = vim.fn.getpos('.')
+    sline = start_pos[2]
+    eline = end_pos[2]
+  else
+    local start_pos = vim.api.nvim_buf_get_mark(bufnr, '<')
+    local end_pos = vim.api.nvim_buf_get_mark(bufnr, '>')
+    sline = start_pos[1]
+    eline = end_pos[1]
+  end
+
+  if sline == 0 or eline == 0 then
+    return nil, nil
+  end
+
+  return math.min(sline, eline) - 1, math.max(sline, eline) - 1
+end
+
 -- Yank diagnostics within visual selection (lines only range)
 local function yank_diagnostics_in_selection()
   local bufnr = 0
-  local start_pos = vim.api.nvim_buf_get_mark(bufnr, '<')
-  local end_pos = vim.api.nvim_buf_get_mark(bufnr, '>')
+  local sline, eline = get_visual_line_range()
 
-  local sline = math.min(start_pos[1], end_pos[1]) - 1
-  local eline = math.max(start_pos[1], end_pos[1]) - 1
+  if not sline or not eline then
+    print("No visual selection found.")
+    return
+  end
 
   local fpath = vim.api.nvim_buf_get_name(bufnr)
   local result = { fpath, "" }
@@ -122,4 +148,4 @@ local function yank_diagnostics_in_selection()
   print("Selection diagnostics yanked to clipboard.")
 end
 
-vim.keymap.set('v', '<leader>ys', yank_diagnostics_in_selection, { noremap = true, silent = true, desc = 'diag: yank sel' })
+vim.keymap.set('x', '<leader>ys', yank_diagnostics_in_selection, { noremap = true, silent = true, desc = 'diag: yank sel' })
