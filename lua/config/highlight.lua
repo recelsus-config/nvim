@@ -3,6 +3,8 @@ local transparent_group = vim.api.nvim_create_augroup('TransparentHighlights', {
 local excluded_groups = {
   Visual = true,
   VisualNOS = true,
+  PmenuSel = true,
+  BlinkCmpMenuSelection = true,
 }
 
 local function clear_background()
@@ -26,9 +28,21 @@ local function apply_search_highlight()
   end
 end
 
+local function apply_completion_highlight()
+  local custom_groups = {
+    PmenuSel = { fg = '#ffffff', bg = '#3e68d7', bold = true },
+    BlinkCmpMenuSelection = { fg = '#ffffff', bg = '#3e68d7', bold = true },
+  }
+
+  for name, opts in pairs(custom_groups) do
+    vim.api.nvim_set_hl(0, name, opts)
+  end
+end
+
 local function refresh_highlights()
   clear_background()
   apply_search_highlight()
+  apply_completion_highlight()
 end
 
 refresh_highlights()

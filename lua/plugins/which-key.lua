@@ -42,20 +42,20 @@ return {
       wk.add({ "<leader>hj", desc = "help: ja", mode = "n" })
       wk.add({ "<leader>he", desc = "help: en", mode = "n" })
 
-      wk.add({ "<leader>lr", desc = "lsp: rename", mode = "n" })
-      wk.add({ "<leader>la", desc = "lsp: action", mode = "n" })
       wk.add({ "<leader>le", desc = "lsp: diag float", mode = "n" })
-      wk.add({ "<leader>lf", desc = "lsp: format", mode = "n" })
-      wk.add({ "<leader>li", desc = "lsp: inlay toggle", mode = "n" })
       wk.add({ "<leader>lp", desc = "lsp: type preview", mode = "n" })
 
       wk.add({ "<leader>cb", desc = "comment: box", mode = "n" })
       wk.add({ "<leader>cb", desc = "comment: box", mode = "v" })
       wk.add({ "<leader>ch", desc = "comment: ai hint", mode = "n" })
 
-      wk.add({ "<leader>td", desc = "translate: diag/selection", mode = "n" })
-      wk.add({ "<leader>td", desc = "translate: diag/selection", mode = "v" })
+      wk.add({ "<leader>tc", desc = "translate: comment", mode = "n" })
+      wk.add({ "<leader>td", desc = "translate: diag", mode = "n" })
+      wk.add({ "<leader>td", desc = "translate: selection", mode = "v" })
+      wk.add({ "<leader>tt", desc = "translate: cursor", mode = "n" })
+      wk.add({ "<leader>tt", desc = "translate: selection", mode = "v" })
       wk.add({ "<leader>tr", desc = "translate: replace", mode = "v" })
+      wk.add({ "<leader>tw", desc = "translate: word", mode = "n" })
       wk.add({ "<leader>si", desc = "shell: insert output", mode = "n" })
     end
   }

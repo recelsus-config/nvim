@@ -1,6 +1,8 @@
 # Dependencies
 
-`fzf` `ripgrep` `nodejs` `npm` `cmake` `make`
+`fzf` `ripgrep` `nodejs` `npm` `cmake` `make` `tree-sitter-cli`
+
+See `packages_list` for a broader list of likely system dependencies.
 
 Language servers are installed via Mason. Common servers used here:
 - TypeScript: `typescript-language-server` (ts_ls)
@@ -10,36 +12,43 @@ Language servers are installed via Mason. Common servers used here:
 
 # Keymap List
 
-### Tab Related Operations
-- `<leader>1`: Go to the 1st tab
-- `<leader>2`: Go to the 2nd tab
-- `<leader>3`: Go to the 3rd tab
-- `<leader>4`: Go to the 4th tab
-- `<leader>t`: Open a new tab (`:tabnew<CR>`)
-- `<leader>q`: Close the current tab (`:tabclose<CR>`)
-
 ### LSP Related Operations
-- `<space>e`: Show diagnostics for the current cursor position in a popup
+- `<leader>le`: Show diagnostics for the current cursor position in a popup
 - `[d`: Go to the previous diagnostic message
 - `]d`: Go to the next diagnostic message
-- `K`: Show documentation for the symbol under the cursor (`hover`)
-- `gd`: Jump to the definition of the symbol under the cursor (`goto definition`)
-- `gi`: Jump to the implementation of the symbol under the cursor (`goto implementation`)
-- `gr`: Find references of the symbol under the cursor (`goto references`)
-- `gs`: Show signature help for the symbol under the cursor (`signature help`)
-- `<leader>ih`: Toggle inlay hints (if supported by the server)
+- `K`: Show hover documentation in an expanded floating window
+- `<leader>ld`: Jump to definition
+- `<leader>lD`: Jump to declaration, when supported by the server
+- `<leader>lt`: Jump to type definition
+- `<leader>lx`: Open type definition in a horizontal split
+- `<leader>lv`: Open type definition in a vertical split
+- `<leader>lm`: Jump to implementation
+- `<leader>lR`: Find references
+- `<leader>ls`: Show signature help
+- `<leader>li`: Toggle inlay hints, when supported by the server
 - `<leader>lr`: Rename symbol
 - `<leader>la`: Code action
 - `<leader>lf`: Format buffer
+- `<leader>lp`: Preview type definition without leaving the current buffer
 
-### cmp Completion Related Operations
+### Completion Related Operations
 - `<C-d>`: Scroll documentation up (4 lines)
 - `<C-f>`: Scroll documentation down (4 lines)
 - `<C-s>`: Start completion
-- `<C-e>`: Close completion window
 - `<CR>`: Select and confirm completion candidate
 - `<C-n>`: Go to the next completion candidate
 - `<C-p>`: Go to the previous completion candidate
+- Completion documentation is shown automatically in a rounded floating window.
+- Copilot suggestions appear as a blink.cmp source, not as Copilot's inline panel/suggestion UI.
+
+### Translate Related Operations
+- `<leader>td` (normal): Translate diagnostic under the cursor
+- `<leader>tc` (normal): Translate the current comment line
+- `<leader>tw` (normal): Translate the word under the cursor
+- `<leader>tt` (normal): Translate by context: diagnostic, then comment, then word
+- `<leader>tt` (visual): Translate selected text
+- `<leader>td` (visual): Translate selected text, kept for compatibility
+- `<leader>tr` (visual): Translate selected text and replace it
 
 ### hlslens Related Operations
 - `n`: Move to the next search result and display `hlslens` highlights
@@ -61,14 +70,17 @@ Language servers are installed via Mason. Common servers used here:
 - Plugin manager: `lazy.nvim` (`init.lua`)
 - Global editor settings & diagnostics: `lua/config/config.lua`
 - LSP core (Mason + native LSP + LspAttach mappings): `lua/plugins/nvim-lsp.lua`
-- Completion (cmp) setup: `lua/plugins/cmp.lua`
+- Completion (blink.cmp) setup: `lua/plugins/cmp.lua`
 - Copilot integration: `lua/plugins/copilot.lua`
+- Tree-sitter parser manager: `lua/plugins/nvim-treesitter.lua`
+- Native Tree-sitter startup: `lua/config/treesitter.lua`
 - Per-language LSP overrides: `lua/lsp/servers/*.lua`
 
 ### LSP Behavior (Neovim 0.11 style)
-- LSP servers are installed with Mason and started via Neovim's native API (`vim.lsp.config` + `vim.lsp.start`).
+- LSP servers are installed with Mason and started via Neovim's native API (`vim.lsp.start`).
 - Buffer-local keymaps and `omnifunc` are set on `LspAttach`.
-- Inlay hints are enabled by default when supported and can be toggled via `<leader>ih`.
+- LSP keymaps are created only when the attached server advertises the matching capability.
+- Inlay hints are enabled by default when supported and can be toggled via `<leader>li`.
 - Global diagnostics UI is configured once in `lua/config/config.lua`.
 
 ### Per-language LSP Overrides
@@ -82,11 +94,20 @@ Provided examples:
 
 Note: If your environment reports the server name `tsserver`, it is mapped to `ts_ls` by the loader.
 
-### Completion (cmp)
+### Completion (blink.cmp)
 - Lives in `lua/plugins/cmp.lua` and is independent from the LSP plugin.
-- Snippet engine: `LuaSnip` is used to expand snippet-style and multi-line items.
-- Sources: `nvim_lsp`, `nvim_lsp_document_symbol`, `nvim_lsp_signature_help`, `luasnip`, `copilot`, `buffer`, `path`.
-- Copilot completion is wired via `copilot-cmp` (see `lua/plugins/copilot.lua`).
+- Snippet support uses blink.cmp's built-in snippet source with `friendly-snippets`.
+- Sources: `lsp`, `path`, `snippets`, `buffer`, `copilot`.
+- Copilot completion is wired as a blink.cmp source via `blink-cmp-copilot`.
+- Completion menu selection and documentation floats are styled explicitly for higher contrast/readability.
+
+### Tree-sitter
+- Parser installation is managed by `neovim-treesitter/nvim-treesitter` plus `treesitter-parser-registry`.
+- Runtime highlighting/folding uses Neovim's native `vim.treesitter.*` APIs.
+- Parsers are installed intentionally per language rather than through the old monolithic nvim-treesitter module setup.
+
+### LSP Test Files
+- `test/ts/*.ts` and `test/cpp/*.{hpp,cpp}` are small snake_case samples for checking hover, definition, type definition, split jumps, references, and completion behavior.
 
 ## Extra Utilities
 
@@ -95,9 +116,17 @@ Note: If your environment reports the server name `tsserver`, it is mapped to `t
   - `<leader>yad`: Yank entire buffer, then list lines with diagnostics
   - `<leader>ys` (visual): Yank selected block, then list diagnostics in selection
   - Implementations: `lua/config/yank.lua`
-- Translate diagnostics or visual selection (requires external provider if configured):
-  - `<leader>td` (normal/visual)
+- Translate diagnostics, comments, words, or visual selection. Requires `GEMINI_API_KEY` and `GEMINI_MODEL`:
+  - `<leader>td` (normal): diagnostic
+  - `<leader>tc` (normal): current comment line
+  - `<leader>tw` (normal): word under cursor
+  - `<leader>tt` (normal): diagnostic/comment/word by context
+  - `<leader>tt` / `<leader>td` (visual): selected text
+  - `<leader>tr` (visual): replace selected text with translation
   - Implementation: `lua/config/ai/translate.lua`
+- Show `:messages` in a split:
+  - `<leader>ms`
+  - Implementation: `lua/config/message.lua`
 - Insert shell command output below the current line:
   - `<leader>si`: prompt for a command and insert its output
   - `:ShellInsert git status`

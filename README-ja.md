@@ -1,6 +1,8 @@
 # 依存関係
 
-`fzf` `ripgrep` `nodejs` `npm` `cmake` `make`
+`fzf` `ripgrep` `nodejs` `npm` `cmake` `make` `tree-sitter-cli`
+
+より広いシステム依存関係は `packages_list` も参照してください。
 
 LSP サーバーは Mason でインストールします。よく使うサーバー:
 - TypeScript: `typescript-language-server` (ts_ls)
@@ -10,36 +12,43 @@ LSP サーバーは Mason でインストールします。よく使うサーバ
 
 # キーマップ一覧
 
-## タブ関連
-- `<leader>1`: 1 番目のタブへ移動
-- `<leader>2`: 2 番目のタブへ移動
-- `<leader>3`: 3 番目のタブへ移動
-- `<leader>4`: 4 番目のタブへ移動
-- `<leader>t`: 新しいタブを開く (`:tabnew<CR>`)
-- `<leader>q`: 現在のタブを閉じる (`:tabclose<CR>`)
-
 ## LSP 関連
-- `<leader>e`: 現在行の診断メッセージをポップアップで表示
+- `<leader>le`: 現在行の診断メッセージをポップアップで表示
 - `[d`: 直前の診断へ移動
 - `]d`: 次の診断へ移動
-- `K`: カーソル下シンボルのドキュメント表示（hover）
-- `gd`: 定義へ移動（goto definition）
-- `gi`: 実装へ移動（goto implementation）
-- `gr`: 参照を検索（goto references）
-- `gs`: シグネチャヘルプ表示（signature help）
-- `<leader>ih`: Inlay Hints の切り替え（サーバーが対応している場合）
+- `K`: 拡張したフロートで hover ドキュメントを表示
+- `<leader>ld`: 定義へ移動
+- `<leader>lD`: 宣言へ移動（サーバーが対応している場合）
+- `<leader>lt`: 型定義へ移動
+- `<leader>lx`: 型定義を水平分割で開く
+- `<leader>lv`: 型定義を垂直分割で開く
+- `<leader>lm`: 実装へ移動
+- `<leader>lR`: 参照を検索
+- `<leader>ls`: シグネチャヘルプ表示
+- `<leader>li`: Inlay Hints の切り替え（サーバーが対応している場合）
 - `<leader>lr`: リネーム
 - `<leader>la`: コードアクション
 - `<leader>lf`: フォーマット
+- `<leader>lp`: 現在バッファに残ったまま型定義をプレビュー
 
-## 補完（cmp）
+## 補完
 - `<C-d>`: ドキュメントを上に 4 行スクロール
 - `<C-f>`: ドキュメントを下に 4 行スクロール
 - `<C-s>`: 補完メニューを開く
-- `<C-e>`: 補完メニューを閉じる
 - `<CR>`: 補完候補を確定
 - `<C-n>`: 次の補完候補へ
 - `<C-p>`: 前の補完候補へ
+- 補完ドキュメントは rounded border のフロートで自動表示
+- Copilot は inline panel/suggestion ではなく blink.cmp の source として表示
+
+## 翻訳
+- `<leader>td`（ノーマル）: カーソル位置の診断を翻訳
+- `<leader>tc`（ノーマル）: 現在行のコメント本文を翻訳
+- `<leader>tw`（ノーマル）: カーソル下の単語を翻訳
+- `<leader>tt`（ノーマル）: 診断、コメント、単語の順で文脈翻訳
+- `<leader>tt`（ビジュアル）: 選択範囲を翻訳
+- `<leader>td`（ビジュアル）: 選択範囲を翻訳（互換用）
+- `<leader>tr`（ビジュアル）: 選択範囲を翻訳して置換
 
 ## Telescope
 - `<leader>ff`: ファイル検索（`Telescope find_files`）
@@ -53,14 +62,17 @@ LSP サーバーは Mason でインストールします。よく使うサーバ
 - プラグインマネージャ: `lazy.nvim`（`init.lua`）
 - エディタ全体設定 & 診断表示: `lua/config/config.lua`
 - LSP コア（Mason + ネイティブ LSP + LspAttach マッピング）: `lua/plugins/nvim-lsp.lua`
-- 補完（cmp）セットアップ: `lua/plugins/cmp.lua`
+- 補完（blink.cmp）セットアップ: `lua/plugins/cmp.lua`
 - Copilot 連携: `lua/plugins/copilot.lua`
+- Tree-sitter parser 管理: `lua/plugins/nvim-treesitter.lua`
+- ネイティブ Tree-sitter 起動: `lua/config/treesitter.lua`
 - 言語サーバー個別設定: `lua/lsp/servers/*.lua`
 
 ## LSP の挙動（Neovim 0.11 流儀）
-- サーバーは Mason でインストールし、起動は Neovim ネイティブ API（`vim.lsp.config` + `vim.lsp.start`）で実施
+- サーバーは Mason でインストールし、起動は Neovim ネイティブ API（`vim.lsp.start`）で実施
 - バッファローカルのキーマップと `omnifunc` は `LspAttach` で付与
-- Inlay Hints は対応サーバーではデフォルト有効、`<leader>ih` で切替
+- LSP キーマップは attach したサーバーが対応 capability を持つ場合だけ作成
+- Inlay Hints は対応サーバーではデフォルト有効、`<leader>li` で切替
 - 診断 UI は `lua/config/config.lua` で一括設定
 
 ## 言語別 LSP オーバーライド
@@ -74,11 +86,20 @@ LSP サーバーは Mason でインストールします。よく使うサーバ
 
 注意: 環境によってサーバー名が `tsserver` の場合もありますが、ローダー側で `ts_ls` にフォールバックします。
 
-## 補完（cmp）
+## 補完（blink.cmp）
 - 設定は `lua/plugins/cmp.lua` に分離されています（LSP プラグインから独立）
-- スニペットエンジンとして `LuaSnip` を使用（スニペット形式・複数行の候補に対応）
-- 有効なソース: `nvim_lsp`, `nvim_lsp_document_symbol`, `nvim_lsp_signature_help`, `luasnip`, `copilot`, `buffer`, `path`
-- Copilot の補完は `copilot-cmp` 連携で有効化（`lua/plugins/copilot.lua`）
+- スニペットは blink.cmp の組み込み snippet source と `friendly-snippets` を使用
+- 有効なソース: `lsp`, `path`, `snippets`, `buffer`, `copilot`
+- Copilot の補完は `blink-cmp-copilot` を blink.cmp source として有効化
+- 補完メニューの選択行とドキュメントフロートは見やすいように明示的に配色・表示設定
+
+## Tree-sitter
+- Parser のインストール管理は `neovim-treesitter/nvim-treesitter` と `treesitter-parser-registry` を使用
+- 実際のハイライトや fold は Neovim ネイティブの `vim.treesitter.*` API で起動
+- Parser は旧 nvim-treesitter の一括 module 設定ではなく、必要な言語を個別に導入する前提
+
+## LSP テストファイル
+- `test/ts/*.ts` と `test/cpp/*.{hpp,cpp}` は hover、定義、型定義、分割ジャンプ、参照、補完を確認するための snake_case サンプルです
 
 ## 追加ユーティリティ
 
@@ -87,8 +108,13 @@ LSP サーバーは Mason でインストールします。よく使うサーバ
   - `<leader>yad`: ファイル全体をヤンクし、その後に診断のある行＋メッセージを列挙してヤンク
   - `<leader>ys`（ビジュアル）: 選択ブロック全体を貼り付け、続けて選択範囲の診断一覧をヤンク
   - 実装: `lua/config/yank.lua`
-- 診断メッセージやビジュアル選択の翻訳（外部プロバイダ設定が必要な場合あり）:
-  - `<leader>td`（ノーマル／ビジュアル）
+- 診断、コメント、単語、選択範囲の翻訳（`GEMINI_API_KEY` と `GEMINI_MODEL` が必要）:
+  - `<leader>td`（ノーマル）: 診断
+  - `<leader>tc`（ノーマル）: 現在行のコメント
+  - `<leader>tw`（ノーマル）: カーソル下の単語
+  - `<leader>tt`（ノーマル）: 診断／コメント／単語を文脈で選択
+  - `<leader>tt` / `<leader>td`（ビジュアル）: 選択範囲
+  - `<leader>tr`（ビジュアル）: 翻訳して置換
   - 実装: `lua/config/ai/translate.lua`
 - `:messages` の表示を分割で開く:
   - `<leader>ms`

@@ -1,53 +1,88 @@
 return {
   {
-    "hrsh7th/nvim-cmp",
+    "saghen/blink.cmp",
+    version = "1.*",
     event = "InsertEnter",
     dependencies = {
-      "hrsh7th/cmp-nvim-lsp",
-      "hrsh7th/cmp-buffer",
-      "hrsh7th/cmp-path",
-      "hrsh7th/cmp-nvim-lsp-signature-help",
-      "hrsh7th/cmp-nvim-lsp-document-symbol",
-      -- snippets for multi-line and snippet-style items
-      "L3MON4D3/LuaSnip",
-      "saadparwaiz1/cmp_luasnip",
+      "rafamadriz/friendly-snippets",
+      {
+        "giuxtaposition/blink-cmp-copilot",
+        dependencies = { "zbirenbaum/copilot.lua" },
+      },
     },
-    config = function()
-      local cmp = require("cmp")
-      local luasnip = require("luasnip")
-      -- optional: load vscode-style snippets if you use them
-      -- require("luasnip.loaders.from_vscode").lazy_load()
-      cmp.setup({
-        snippet = {
-          expand = function(args)
-            luasnip.lsp_expand(args.body)
-          end,
+    ---@module "blink.cmp"
+    ---@type blink.cmp.Config
+    opts = {
+      keymap = {
+        preset = "default",
+        ["<C-s>"] = { "show" },
+        ["<C-d>"] = { "scroll_documentation_up", "fallback" },
+        ["<C-f>"] = { "scroll_documentation_down", "fallback" },
+        ["<CR>"] = { "select_and_accept", "fallback" },
+      },
+      appearance = {
+        nerd_font_variant = "mono",
+        kind_icons = {
+          Copilot = "",
         },
-        experimental = {
-          ghost_text = true,
+      },
+      completion = {
+        menu = {
+          border = "rounded",
+          draw = {
+            columns = {
+              { "kind_icon" },
+              { "label", "label_description", gap = 1 },
+              { "source_name" },
+            },
+            components = {
+              label = {
+                width = { fill = true, max = 80 },
+              },
+              label_description = {
+                width = { max = 50 },
+              },
+              source_name = {
+                width = { max = 20 },
+              },
+            },
+          },
         },
-        -- keep defaults for completion/docs; avoid heavy formatting
-        mapping = {
-          ["<C-p>"] = cmp.mapping.select_prev_item(),
-          ["<C-n>"] = cmp.mapping.select_next_item(),
-          ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-          ['<C-f>'] = cmp.mapping.scroll_docs(4),
-          ['<C-s>'] = cmp.mapping.complete(),
-          ['<C-e>'] = cmp.mapping.close(),
-          ['<CR>'] = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = true }),
+        documentation = {
+          auto_show = true,
+          auto_show_delay_ms = 200,
+          window = {
+            border = "rounded",
+            max_width = 100,
+            max_height = 30,
+          },
         },
-        sources = cmp.config.sources({
-          { name = 'nvim_lsp' },
-          { name = 'nvim_lsp_document_symbol' },
-          { name = 'nvim_lsp_signature_help' },
-          { name = 'luasnip' },
-          { name = 'copilot' },
-          { name = 'buffer' },
-          { name = 'path' },
-        }),
-      })
-
-      -- no external preview window hooks
-    end,
+        ghost_text = { enabled = true },
+      },
+      sources = {
+        default = { "lsp", "path", "snippets", "buffer", "copilot" },
+        providers = {
+          copilot = {
+            name = "copilot",
+            module = "blink-cmp-copilot",
+            score_offset = 100,
+            async = true,
+            transform_items = function(_, items)
+              local CompletionItemKind = require("blink.cmp.types").CompletionItemKind
+              local kind_idx = #CompletionItemKind + 1
+              CompletionItemKind[kind_idx] = "Copilot"
+              for _, item in ipairs(items) do
+                item.kind = kind_idx
+              end
+              return items
+            end,
+          },
+        },
+      },
+      fuzzy = {
+        implementation = "prefer_rust_with_warning",
+      },
+    },
+    opts_extend = { "sources.default" },
   },
 }

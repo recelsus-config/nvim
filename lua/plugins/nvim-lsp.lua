@@ -5,7 +5,6 @@ return {
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
       "williamboman/mason-lspconfig.nvim",
-      "hrsh7th/cmp-nvim-lsp",
     },
     config = function()
       require("mason").setup()
@@ -35,16 +34,82 @@ return {
             vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc })
           end
 
-          buf_map('n', 'K',  vim.lsp.buf.hover,         'lsp: hover')
-          buf_map('n', 'gd', vim.lsp.buf.definition,    'lsp: goto def')
-          buf_map('n', 'gi', vim.lsp.buf.implementation, 'lsp: goto impl')
-          buf_map('n', 'gr', vim.lsp.buf.references,    'lsp: refs')
-          buf_map('n', 'gs', vim.lsp.buf.signature_help,'lsp: signature')
+          local function supports(method)
+            if not client then return false end
+            if type(client.supports_method) == 'function' then
+              local ok, supported = pcall(client.supports_method, client, method, bufnr)
+              if ok then return supported end
+              ok, supported = pcall(client.supports_method, client, method)
+              if ok then return supported end
+            end
+            return false
+          end
 
-          -- LSP utilities
-          buf_map('n', '<leader>lr', vim.lsp.buf.rename,       'lsp: rename')
-          buf_map('n', '<leader>la', vim.lsp.buf.code_action,  'lsp: action')
-          buf_map('n', '<leader>lf', function() vim.lsp.buf.format({ async = true }) end, 'lsp: format')
+          local function hover()
+            vim.lsp.buf.hover({
+              border = 'rounded',
+              focusable = true,
+              max_width = 120,
+              max_height = 30,
+              title = ' LSP Hover ',
+              title_pos = 'center',
+            })
+          end
+
+          local function type_definition_in_split(split_cmd)
+            vim.lsp.buf.type_definition({
+              on_list = function(options)
+                if not options.items or vim.tbl_isempty(options.items) then
+                  vim.notify('No type definition found', vim.log.levels.INFO)
+                  return
+                end
+
+                vim.fn.setqflist({}, ' ', {
+                  title = options.title or 'LSP type definition',
+                  items = options.items,
+                })
+                vim.cmd(split_cmd)
+                vim.cmd.cfirst()
+              end,
+            })
+          end
+
+          buf_map('n', 'K', hover, 'lsp: hover')
+
+          -- LSP navigation/utilities
+          if supports('textDocument/definition') then
+            buf_map('n', '<leader>ld', vim.lsp.buf.definition, 'lsp: definition')
+          end
+          if supports('textDocument/declaration') then
+            buf_map('n', '<leader>lD', vim.lsp.buf.declaration, 'lsp: declaration')
+          end
+          if supports('textDocument/typeDefinition') then
+            buf_map('n', '<leader>lt', vim.lsp.buf.type_definition, 'lsp: type definition')
+            buf_map('n', '<leader>lx', function()
+              type_definition_in_split('split')
+            end, 'lsp: type definition split')
+            buf_map('n', '<leader>lv', function()
+              type_definition_in_split('vsplit')
+            end, 'lsp: type definition vsplit')
+          end
+          if supports('textDocument/implementation') then
+            buf_map('n', '<leader>lm', vim.lsp.buf.implementation, 'lsp: implementation')
+          end
+          if supports('textDocument/references') then
+            buf_map('n', '<leader>lR', vim.lsp.buf.references, 'lsp: references')
+          end
+          if supports('textDocument/signatureHelp') then
+            buf_map('n', '<leader>ls', vim.lsp.buf.signature_help, 'lsp: signature')
+          end
+          if supports('textDocument/rename') then
+            buf_map('n', '<leader>lr', vim.lsp.buf.rename, 'lsp: rename')
+          end
+          if supports('textDocument/codeAction') then
+            buf_map('n', '<leader>la', vim.lsp.buf.code_action, 'lsp: action')
+          end
+          if supports('textDocument/formatting') then
+            buf_map('n', '<leader>lf', function() vim.lsp.buf.format({ async = true }) end, 'lsp: format')
+          end
 
           -- Enable inlay hints by default if supported; add toggle
           if client and client.server_capabilities and client.server_capabilities.inlayHintProvider then
@@ -79,8 +144,8 @@ return {
         end,
       })
 
-      -- Centralize capabilities for all servers
-      local capabilities = require('cmp_nvim_lsp').default_capabilities()
+      -- Centralize completion capabilities for all servers
+      local capabilities = require('blink.cmp').get_lsp_capabilities()
 
       -- Helpers -------------------------------------------------------------
       local function root_pattern(markers)

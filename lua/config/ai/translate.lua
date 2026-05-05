@@ -82,6 +82,99 @@ local function replace_visual_selection(selection, replacement)
   )
 end
 
+local function has_japanese(text)
+  return text and text:find('[ぁ-んァ-ン一-龯]') ~= nil
+end
+
+local function translation_target_language(text)
+  return has_japanese(text) and 'English' or 'Japanese'
+end
+
+local function translate_text(title, text_to_translate, source_kind)
+  if not text_to_translate or vim.trim(text_to_translate) == '' then
+    vim.notify('No translatable text found.', vim.log.levels.INFO)
+    return
+  end
+
+  local target_language = translation_target_language(text_to_translate)
+  local prompt = string.format([[
+    Translate the following %s into %s.
+
+    Return only the translated text.
+    Do not include explanations, alternatives, quotes, code fences, prefixes, or suffixes.
+    If the text is a single technical word, preserve the technical nuance and translate it naturally.
+
+    Text:
+    %s
+  ]], source_kind or 'text', target_language, text_to_translate)
+
+  local translated, err = ai.send_ai_request(prompt)
+  if translated then
+    show_in_split(title, translated)
+  else
+    show_in_split("AI Error", err or "Failed to get response from AI API")
+  end
+end
+
+local function strip_comment_marker(line)
+  local text = line or ''
+  local commentstring = vim.bo.commentstring
+
+  if commentstring and commentstring:find('%%s', 1, true) then
+    local before, after = commentstring:match('^(.-)%%s(.-)$')
+    before = vim.trim(before or '')
+    after = vim.trim(after or '')
+
+    if before ~= '' and vim.startswith(vim.trim(text), before) then
+      text = vim.trim(text):sub(#before + 1)
+      if after ~= '' and vim.endswith(vim.trim(text), after) then
+        text = vim.trim(text):sub(1, #vim.trim(text) - #after)
+      end
+      return vim.trim(text)
+    end
+  end
+
+  local patterns = {
+    '^%s*//%s*(.*)$',
+    '^%s*#%s*(.*)$',
+    '^%s*%-%-%s*(.*)$',
+    '^%s*/%*%s*(.-)%s*%*/%s*$',
+    '^%s*%*%s*(.*)$',
+  }
+
+  for _, pattern in ipairs(patterns) do
+    local stripped = text:match(pattern)
+    if stripped then return vim.trim(stripped) end
+  end
+
+  return nil
+end
+
+local function get_current_comment_text()
+  local line = vim.api.nvim_get_current_line()
+  return strip_comment_marker(line)
+end
+
+local function translate_current_comment()
+  local comment_text = get_current_comment_text()
+  if not comment_text or comment_text == '' then
+    vim.notify('Current line does not look like a comment.', vim.log.levels.INFO)
+    return
+  end
+
+  translate_text('Translated Comment', comment_text, 'code comment')
+end
+
+local function translate_current_word()
+  local word = vim.fn.expand('<cword>')
+  if not word or word == '' then
+    vim.notify('No word under cursor.', vim.log.levels.INFO)
+    return
+  end
+
+  translate_text('Translated Word', word, 'word')
+end
+
 local function translate_visual_selection()
   local selection = get_visual_selection()
   local text_to_translate = selection.text
@@ -123,8 +216,7 @@ local function replace_visual_selection_with_translation()
     return
   end
 
-  local has_japanese = text_to_translate:find('[ぁ-んァ-ン一-龯]')
-  local target_language = has_japanese and 'English' or 'Japanese'
+  local target_language = translation_target_language(text_to_translate)
   local prompt = string.format([[
     Translate the following text into %s.
 
@@ -192,6 +284,29 @@ local function translate_diagnostic_message()
   end
 end
 
+local function translate_cursor_context()
+  local bufnr = 0
+  local lnum = vim.fn.line('.') - 1
+  local diagnostics = vim.diagnostic.get(bufnr, { lnum = lnum })
+
+  if #diagnostics > 0 then
+    translate_diagnostic_message()
+    return
+  end
+
+  local comment_text = get_current_comment_text()
+  if comment_text and comment_text ~= '' then
+    translate_text('Translated Comment', comment_text, 'code comment')
+    return
+  end
+
+  translate_current_word()
+end
+
 vim.keymap.set('n', '<leader>td', translate_diagnostic_message, { noremap = true, silent = true, desc = "translate: diag" })
-vim.keymap.set('v', '<leader>td', translate_visual_selection,   { noremap = true, silent = true, desc = "translate: selection" })
+vim.keymap.set('n', '<leader>tc', translate_current_comment, { noremap = true, silent = true, desc = "translate: comment" })
+vim.keymap.set('n', '<leader>tt', translate_cursor_context, { noremap = true, silent = true, desc = "translate: cursor" })
+vim.keymap.set('n', '<leader>tw', translate_current_word, { noremap = true, silent = true, desc = "translate: word" })
+vim.keymap.set('v', '<leader>td', translate_visual_selection, { noremap = true, silent = true, desc = "translate: selection" })
+vim.keymap.set('v', '<leader>tt', translate_visual_selection, { noremap = true, silent = true, desc = "translate: selection" })
 vim.keymap.set('v', '<leader>tr', replace_visual_selection_with_translation, { noremap = true, silent = true, desc = "translate: replace" })
