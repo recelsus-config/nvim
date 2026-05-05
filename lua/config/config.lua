@@ -24,6 +24,7 @@ opt.cmdheight = 2
 
 opt.writebackup = false
 opt.backup = false
+opt.autoread = true
 opt.wrap = false
 opt.matchtime = 0
 
@@ -59,6 +60,24 @@ opt.timeoutlen = 600
 
 vim.keymap.set('t', '<ESC>', '<C-\\><C-n>', { noremap = true, silent = true, desc = 'term: normal mode' })
 vim.opt.termguicolors = true
+
+local autoread_group = vim.api.nvim_create_augroup('UserAutoRead', { clear = true })
+
+vim.api.nvim_create_autocmd({ 'FocusGained', 'BufEnter', 'CursorHold', 'CursorHoldI' }, {
+  group = autoread_group,
+  callback = function()
+    if vim.fn.mode() ~= 'c' then
+      pcall(vim.cmd, 'checktime')
+    end
+  end,
+})
+
+vim.api.nvim_create_autocmd('FileChangedShellPost', {
+  group = autoread_group,
+  callback = function()
+    vim.notify('Buffer reloaded from disk', vim.log.levels.INFO)
+  end,
+})
 
 vim.diagnostic.config({
   virtual_text = true,
