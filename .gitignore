@@ -111,12 +111,13 @@ run/
 # -----------------------------
 .env
 .env.*
+!.env.example
 dist/
 
 # -----------------------------
 # Neovim config specific
 # -----------------------------
-# Local environment selector file read by init.lua
+# Legacy/local environment selector files
 /env
 
 # Do not track plugin lockfile

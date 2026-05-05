@@ -35,6 +35,15 @@ return {
 
       wk.add({ "<leader>gb", desc = "git: blame toggle", mode = "n" })
       wk.add({ "<leader>gd", desc = "git: diff", mode = "n" })
+      wk.add({ "<leader>gC", desc = "git: diff close", mode = "n" })
+      wk.add({ "<leader>gD", desc = "git: diff view", mode = "n" })
+      wk.add({ "<leader>gF", desc = "git: file history", mode = "n" })
+      wk.add({ "<leader>gH", desc = "git: repo history", mode = "n" })
+      wk.add({ "<leader>gM", desc = "git: diff default", mode = "n" })
+      wk.add({ "<leader>gs", desc = "git: status", mode = "n" })
+      wk.add({ "<leader>gT", desc = "git: diff files toggle", mode = "n" })
+      wk.add({ "<leader>gv", desc = "git: file vsplit diff", mode = "n" })
+      wk.add({ "<leader>gx", desc = "git: file split diff", mode = "n" })
 
       wk.add({ "<leader>yd", desc = "diag: yank line", mode = "n" })
       wk.add({ "<leader>yad", desc = "diag: yank all", mode = "n" })

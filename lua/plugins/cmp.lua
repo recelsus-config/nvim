@@ -2,7 +2,7 @@ return {
   {
     "saghen/blink.cmp",
     version = "1.*",
-    event = "InsertEnter",
+    event = { "InsertEnter", "CmdlineEnter" },
     dependencies = {
       "rafamadriz/friendly-snippets",
       {
@@ -58,6 +58,16 @@ return {
           },
         },
         ghost_text = { enabled = true },
+      },
+      cmdline = {
+        keymap = {
+          preset = "cmdline",
+          ["<Tab>"] = { "show", "accept" },
+        },
+        completion = {
+          menu = { auto_show = true },
+          ghost_text = { enabled = true },
+        },
       },
       sources = {
         default = { "lsp", "path", "snippets", "buffer", "copilot" },

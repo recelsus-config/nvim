@@ -40,6 +40,7 @@ Language servers are installed via Mason. Common servers used here:
 - `<C-p>`: Go to the previous completion candidate
 - Completion documentation is shown automatically in a rounded floating window.
 - Copilot suggestions appear as a blink.cmp source, not as Copilot's inline panel/suggestion UI.
+- Cmdline completion opens automatically for command-line mode.
 
 ### Translate Related Operations
 - `<leader>td` (normal): Translate diagnostic under the cursor
@@ -65,15 +66,30 @@ Language servers are installed via Mason. Common servers used here:
 - `<leader>fh`: Search help tags (`Telescope help_tags`)
 - `<leader>fk`: Show keymap list (`builtin.keymaps`)
 
+### Git/Diff Related Operations
+- `<leader>gb`: Toggle current line blame
+- `<leader>gd`: Show current file diff via gitsigns
+- `<leader>gD`: Open Diffview for current working tree changes
+- `<leader>gM`: Open Diffview against the default branch ref (`origin/HEAD`, `main`, `master`, or `HEAD~1`)
+- `<leader>gC`: Close Diffview
+- `<leader>gT`: Toggle Diffview file panel
+- `<leader>gF`: Show current file history
+- `<leader>gH`: Show repository file history
+- `<leader>gs`: Open fugitive Git status
+- `<leader>gv`: Open current file diff in a vertical split
+- `<leader>gx`: Open current file diff in a horizontal split
+
 ## Configuration Structure
 
 - Plugin manager: `lazy.nvim` (`init.lua`)
 - Global editor settings & diagnostics: `lua/config/config.lua`
+- Environment file loading: `lua/config/env.lua`
 - LSP core (Mason + native LSP + LspAttach mappings): `lua/plugins/nvim-lsp.lua`
 - Completion (blink.cmp) setup: `lua/plugins/cmp.lua`
 - Copilot integration: `lua/plugins/copilot.lua`
 - Tree-sitter parser manager: `lua/plugins/nvim-treesitter.lua`
 - Native Tree-sitter startup: `lua/config/treesitter.lua`
+- Git diff/review helpers: `lua/plugins/git-diff.lua`
 - Per-language LSP overrides: `lua/lsp/servers/*.lua`
 
 ### LSP Behavior (Neovim 0.11 style)
@@ -100,6 +116,7 @@ Note: If your environment reports the server name `tsserver`, it is mapped to `t
 - Sources: `lsp`, `path`, `snippets`, `buffer`, `copilot`.
 - Copilot completion is wired as a blink.cmp source via `blink-cmp-copilot`.
 - Completion menu selection and documentation floats are styled explicitly for higher contrast/readability.
+- Cmdline mode uses blink.cmp as well. The menu is shown automatically instead of requiring `<Tab>` first.
 
 ### Tree-sitter
 - Parser installation is managed by `neovim-treesitter/nvim-treesitter` plus `treesitter-parser-registry`.
@@ -109,8 +126,19 @@ Note: If your environment reports the server name `tsserver`, it is mapped to `t
 ### LSP Test Files
 - `test/ts/*.ts` and `test/cpp/*.{hpp,cpp}` are small snake_case samples for checking hover, definition, type definition, split jumps, references, and completion behavior.
 
+### Git Diff Tools
+- `gitsigns.nvim` handles inline signs, blame, and quick current-file hunk/diff checks.
+- `diffview.nvim` provides a left file panel and side-by-side diff layout for working tree, branch, and history review.
+- `vim-fugitive` provides Git status and split diff commands for the current file.
+
 ## Extra Utilities
 
+- Environment overrides:
+  - Config-root `.env` is loaded automatically at startup and can override or add environment variables for this Neovim config.
+  - `.env.example` documents the expected local variables. Copy it to `.env` for machine-local values.
+  - `:EnvLoad`: search for `.env` upward from the directory where Neovim was started, then load it manually.
+  - `:EnvLoad path/to/file.env`: load the specified env file manually.
+  - Implementation: `lua/config/env.lua`
 - Yank diagnostics and code lines:
   - `<leader>yd`: Yank current line + topmost diagnostic under cursor
   - `<leader>yad`: Yank entire buffer, then list lines with diagnostics
@@ -141,5 +169,5 @@ Note: If your environment reports the server name `tsserver`, it is mapped to `t
 
 ## Notes
 
-- Local environment selector file `env` (at repo root) is ignored by VCS and read by `init.lua` if present.
+- `.env` and `.env.*` are ignored by VCS; `.env.example` is tracked as a template.
 - `lazy-lock.json` is ignored (not tracked). If you want to pin plugin versions, remove it from `.gitignore` locally.
