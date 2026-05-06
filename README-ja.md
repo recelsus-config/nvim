@@ -114,6 +114,7 @@ LSP サーバーは Mason でインストールします。よく使うサーバ
 - Parser のインストール管理は `neovim-treesitter/nvim-treesitter` と `treesitter-parser-registry` を使用
 - 実際のハイライトや fold は Neovim ネイティブの `vim.treesitter.*` API で起動
 - Parser は旧 nvim-treesitter の一括 module 設定ではなく、必要な言語を個別に導入する前提
+- Plugin install 時に `:TSUpdate` は自動実行せず、parser 更新は必要なときだけ明示的に行う
 
 ## LSP テストファイル
 - `test/ts/*.ts` と `test/cpp/*.{hpp,cpp}` は hover、定義、型定義、分割ジャンプ、参照、補完を確認するための snake_case サンプルです

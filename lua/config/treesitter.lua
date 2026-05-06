@@ -12,7 +12,11 @@ local function start_treesitter(args)
     return
   end
 
-  vim.treesitter.start(bufnr, lang)
+  local started = pcall(vim.treesitter.start, bufnr, lang)
+  if not started then
+    return
+  end
+
   vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
   vim.wo.foldmethod = "expr"
   vim.wo.foldlevel = 99
