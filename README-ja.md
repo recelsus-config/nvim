@@ -82,23 +82,25 @@ LSP サーバーは Mason でインストールします。よく使うサーバ
 - Tree-sitter parser 管理: `lua/plugins/nvim-treesitter.lua`
 - ネイティブ Tree-sitter 起動: `lua/config/treesitter.lua`
 - Git diff/review 補助: `lua/plugins/git-diff.lua`
-- 言語サーバー個別設定: `lua/lsp/servers/*.lua`
+- 言語サーバー定義: `lua/lsp/servers/*.lua`
 
-## LSP の挙動（Neovim 0.11 流儀）
-- サーバーは Mason でインストールし、起動は Neovim ネイティブ API（`vim.lsp.start`）で実施
+## LSP Behavior
+- サーバーは Mason でインストールし、起動は Neovim ネイティブ API（`vim.lsp.config` / `vim.lsp.enable`）で実施
+- `lua/lsp/servers/<server>.lua` に定義があり、かつ Mason にインストール済みのサーバーだけを有効化
 - バッファローカルのキーマップと `omnifunc` は `LspAttach` で付与
 - LSP キーマップは attach したサーバーが対応 capability を持つ場合だけ作成
 - Inlay Hints は対応サーバーではデフォルト有効、`<leader>li` で切替
 - 診断 UI は `lua/config/config.lua` で一括設定
 
-## 言語別 LSP オーバーライド
-`lua/lsp/servers/<server>.lua` にテーブルを置くと、内蔵のデフォルト設定に深くマージされ、`vim.lsp.start` の直前に適用されます。
+## Per-language LSP Definitions
+`lua/lsp/servers/<server>.lua` に `cmd`, `filetypes`, `root_markers` を含む完全なサーバー設定を置きます。
 
 用意済み:
 - TypeScript (ts_ls): `lua/lsp/servers/ts_ls.lua`
 - C/C++ (clangd): `lua/lsp/servers/clangd.lua`
 - Bash (bashls): `lua/lsp/servers/bashls.lua`
 - Lua (lua_ls): `lua/lsp/servers/lua_ls.lua`
+- Go (gopls): `lua/lsp/servers/gopls.lua`
 
 注意: 環境によってサーバー名が `tsserver` の場合もありますが、ローダー側で `ts_ls` にフォールバックします。
 

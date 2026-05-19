@@ -90,23 +90,25 @@ Language servers are installed via Mason. Common servers used here:
 - Tree-sitter parser manager: `lua/plugins/nvim-treesitter.lua`
 - Native Tree-sitter startup: `lua/config/treesitter.lua`
 - Git diff/review helpers: `lua/plugins/git-diff.lua`
-- Per-language LSP overrides: `lua/lsp/servers/*.lua`
+- Per-language LSP definitions: `lua/lsp/servers/*.lua`
 
 ### LSP Behavior (Neovim 0.11 style)
-- LSP servers are installed with Mason and started via Neovim's native API (`vim.lsp.start`).
+- LSP servers are installed with Mason and enabled via Neovim's native API (`vim.lsp.config` / `vim.lsp.enable`).
+- Only installed servers with a matching `lua/lsp/servers/<server>.lua` definition are enabled.
 - Buffer-local keymaps and `omnifunc` are set on `LspAttach`.
 - LSP keymaps are created only when the attached server advertises the matching capability.
 - Inlay hints are enabled by default when supported and can be toggled via `<leader>li`.
 - Global diagnostics UI is configured once in `lua/config/config.lua`.
 
-### Per-language LSP Overrides
-Place a file under `lua/lsp/servers/<server>.lua` that returns a table merged over the built-in defaults before `vim.lsp.start`.
+### Per-language LSP Definitions
+Place a file under `lua/lsp/servers/<server>.lua` that returns the complete server config, including `cmd`, `filetypes`, and `root_markers`.
 
 Provided examples:
 - TypeScript (ts_ls): `lua/lsp/servers/ts_ls.lua`
 - C/C++ (clangd): `lua/lsp/servers/clangd.lua`
 - Bash (bashls): `lua/lsp/servers/bashls.lua`
 - Lua (lua_ls): `lua/lsp/servers/lua_ls.lua`
+- Go (gopls): `lua/lsp/servers/gopls.lua`
 
 Note: If your environment reports the server name `tsserver`, it is mapped to `ts_ls` by the loader.
 

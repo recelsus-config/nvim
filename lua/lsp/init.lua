@@ -1,7 +1,6 @@
 local M = {}
 
--- Returns a table of options for a given server name if defined under lsp/servers/<name>.lua
--- Example file should return an options table that will be merged into lspconfig setup opts.
+-- Returns a full server config from lsp/servers/<name>.lua.
 function M.get(server_name)
   local try = function(name)
     local ok, mod = pcall(require, 'lsp.servers.' .. name)
@@ -18,5 +17,20 @@ function M.get(server_name)
   end
 end
 
-return M
+function M.names()
+  local names = {}
+  local seen = {}
 
+  for _, path in ipairs(vim.api.nvim_get_runtime_file('lua/lsp/servers/*.lua', true)) do
+    local name = path:match('([^/]+)%.lua$')
+    if name and not seen[name] then
+      seen[name] = true
+      table.insert(names, name)
+    end
+  end
+
+  table.sort(names)
+  return names
+end
+
+return M

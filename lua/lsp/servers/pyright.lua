@@ -143,6 +143,9 @@ local function apply_environment(config, root_dir)
 end
 
 local M = {
+  cmd = { 'pyright-langserver', '--stdio' },
+  filetypes = { 'python' },
+  root_markers = { 'pyproject.toml', 'setup.cfg', 'setup.py', 'requirements.txt', '.git' },
   settings = {
     python = {
       analysis = {
