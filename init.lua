@@ -18,4 +18,9 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Load plugins via config module
 local plugin_loader = require('config.plugins')
-require('lazy').setup(plugin_loader.load(), { rocks = { enabled = false } })
+require('lazy').setup(plugin_loader.load(), {
+  rocks = { enabled = false },
+  git = {
+    filter = false,
+  },
+})

@@ -124,6 +124,7 @@ Note: If your environment reports the server name `tsserver`, it is mapped to `t
 - Parser installation is managed by `neovim-treesitter/nvim-treesitter` plus `treesitter-parser-registry`.
 - Runtime highlighting/folding uses Neovim's native `vim.treesitter.*` APIs.
 - Parsers are installed intentionally per language rather than through the old monolithic nvim-treesitter module setup.
+- Plugin install does not auto-run `:TSUpdate`; parser updates are done intentionally when needed.
 
 ### LSP Test Files
 - `test/ts/*.ts` and `test/cpp/*.{hpp,cpp}` are small snake_case samples for checking hover, definition, type definition, split jumps, references, and completion behavior.
