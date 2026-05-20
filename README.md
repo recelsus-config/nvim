@@ -110,8 +110,6 @@ Provided examples:
 - Lua (lua_ls): `lua/lsp/servers/lua_ls.lua`
 - Go (gopls): `lua/lsp/servers/gopls.lua`
 
-Note: If your environment reports the server name `tsserver`, it is mapped to `ts_ls` by the loader.
-
 ### Completion (blink.cmp)
 - Lives in `lua/plugins/cmp.lua` and is independent from the LSP plugin.
 - Snippet support uses blink.cmp's built-in snippet source with `friendly-snippets`.

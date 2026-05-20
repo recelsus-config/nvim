@@ -102,8 +102,6 @@ LSP サーバーは Mason でインストールします。よく使うサーバ
 - Lua (lua_ls): `lua/lsp/servers/lua_ls.lua`
 - Go (gopls): `lua/lsp/servers/gopls.lua`
 
-注意: 環境によってサーバー名が `tsserver` の場合もありますが、ローダー側で `ts_ls` にフォールバックします。
-
 ## 補完（blink.cmp）
 - 設定は `lua/plugins/cmp.lua` に分離されています（LSP プラグインから独立）
 - スニペットは blink.cmp の組み込み snippet source と `friendly-snippets` を使用

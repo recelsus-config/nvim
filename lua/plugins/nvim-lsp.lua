@@ -163,10 +163,10 @@ return {
         installed[s] = true
       end
 
-      for _, name in ipairs(lsp_servers.names()) do
-        if installed[name] then
-          vim.lsp.config(name, lsp_servers.get(name))
-          vim.lsp.enable(name)
+      for _, server in ipairs(lsp_servers.configs()) do
+        if installed[server.name] then
+          vim.lsp.config(server.name, server.config)
+          vim.lsp.enable(server.name)
         end
       end
     end,
