@@ -1,7 +1,14 @@
 local function paste_with(command)
   return function()
-    local output = vim.fn.systemlist(command)
-    return { output, 'v' }
+    local output = vim.fn.system(command)
+    local is_linewise = output:sub(-1) == "\n"
+    local lines = vim.split(output:gsub("\r\n", "\n"):gsub("\r", "\n"), "\n", { plain = true })
+
+    if is_linewise then
+      table.remove(lines)
+    end
+
+    return { lines, is_linewise and 'V' or 'v' }
   end
 end
 
@@ -28,5 +35,5 @@ vim.g.clipboard = {
     ['+'] = paste,
     ['*'] = paste,
   },
-  cache_enabled = 0,
+  cache_enabled = 1,
 }
