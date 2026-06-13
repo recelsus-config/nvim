@@ -2,8 +2,6 @@
 
 `fzf` `ripgrep` `nodejs` `npm` `cmake` `make` `tree-sitter-cli`
 
-より広いシステム依存関係は `packages_list` も参照してください。
-
 LSP サーバーは Mason でインストールします。よく使うサーバー:
 - TypeScript: `typescript-language-server` (ts_ls)
 - C/C++: `clangd`
@@ -39,7 +37,6 @@ LSP サーバーは Mason でインストールします。よく使うサーバ
 - `<C-n>`: 次の補完候補へ
 - `<C-p>`: 前の補完候補へ
 - 補完ドキュメントは rounded border のフロートで自動表示
-- Copilot は inline panel/suggestion ではなく blink.cmp の source として表示
 - cmdline 補完はコマンドラインモードで自動表示
 
 ## 翻訳
@@ -78,7 +75,6 @@ LSP サーバーは Mason でインストールします。よく使うサーバ
 - 環境変数ファイル読み込み: `lua/config/env.lua`
 - LSP コア（Mason + ネイティブ LSP + LspAttach マッピング）: `lua/plugins/nvim-lsp.lua`
 - 補完（blink.cmp）セットアップ: `lua/plugins/cmp.lua`
-- Copilot 連携: `lua/plugins/copilot.lua`
 - Tree-sitter parser 管理: `lua/plugins/nvim-treesitter.lua`
 - ネイティブ Tree-sitter 起動: `lua/config/treesitter.lua`
 - Git diff/review 補助: `lua/plugins/git-diff.lua`
@@ -105,8 +101,7 @@ LSP サーバーは Mason でインストールします。よく使うサーバ
 ## 補完（blink.cmp）
 - 設定は `lua/plugins/cmp.lua` に分離されています（LSP プラグインから独立）
 - スニペットは blink.cmp の組み込み snippet source と `friendly-snippets` を使用
-- 有効なソース: `lsp`, `path`, `snippets`, `buffer`, `copilot`
-- Copilot の補完は `blink-cmp-copilot` を blink.cmp source として有効化
+- 有効なソース: `lsp`, `path`, `snippets`, `buffer`
 - 補完メニューの選択行とドキュメントフロートは見やすいように明示的に配色・表示設定
 - cmdline mode でも blink.cmp を使い、最初に `<Tab>` を押さなくても候補メニューを自動表示
 

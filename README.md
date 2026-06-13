@@ -2,8 +2,6 @@
 
 `fzf` `ripgrep` `nodejs` `npm` `cmake` `make` `tree-sitter-cli`
 
-See `packages_list` for a broader list of likely system dependencies.
-
 Language servers are installed via Mason. Common servers used here:
 - TypeScript: `typescript-language-server` (ts_ls)
 - C/C++: `clangd`
@@ -39,7 +37,6 @@ Language servers are installed via Mason. Common servers used here:
 - `<C-n>`: Go to the next completion candidate
 - `<C-p>`: Go to the previous completion candidate
 - Completion documentation is shown automatically in a rounded floating window.
-- Copilot suggestions appear as a blink.cmp source, not as Copilot's inline panel/suggestion UI.
 - Cmdline completion opens automatically for command-line mode.
 
 ### Translate Related Operations
@@ -86,7 +83,6 @@ Language servers are installed via Mason. Common servers used here:
 - Environment file loading: `lua/config/env.lua`
 - LSP core (Mason + native LSP + LspAttach mappings): `lua/plugins/nvim-lsp.lua`
 - Completion (blink.cmp) setup: `lua/plugins/cmp.lua`
-- Copilot integration: `lua/plugins/copilot.lua`
 - Tree-sitter parser manager: `lua/plugins/nvim-treesitter.lua`
 - Native Tree-sitter startup: `lua/config/treesitter.lua`
 - Git diff/review helpers: `lua/plugins/git-diff.lua`
@@ -113,8 +109,7 @@ Provided examples:
 ### Completion (blink.cmp)
 - Lives in `lua/plugins/cmp.lua` and is independent from the LSP plugin.
 - Snippet support uses blink.cmp's built-in snippet source with `friendly-snippets`.
-- Sources: `lsp`, `path`, `snippets`, `buffer`, `copilot`.
-- Copilot completion is wired as a blink.cmp source via `blink-cmp-copilot`.
+- Sources: `lsp`, `path`, `snippets`, `buffer`.
 - Completion menu selection and documentation floats are styled explicitly for higher contrast/readability.
 - Cmdline mode uses blink.cmp as well. The menu is shown automatically instead of requiring `<Tab>` first.
 

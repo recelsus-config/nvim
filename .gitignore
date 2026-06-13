@@ -120,5 +120,8 @@ dist/
 # Legacy/local environment selector files
 /env
 
+# Local dependency notes
+/packages_list
+
 # Do not track plugin lockfile
 lazy-lock.json

@@ -56,7 +56,6 @@ return {
 
       wk.add({ "<leader>cb", desc = "comment: box", mode = "n" })
       wk.add({ "<leader>cb", desc = "comment: box", mode = "v" })
-      wk.add({ "<leader>ch", desc = "comment: ai hint", mode = "n" })
 
       wk.add({ "<leader>tc", desc = "translate: comment", mode = "n" })
       wk.add({ "<leader>td", desc = "translate: diag", mode = "n" })
